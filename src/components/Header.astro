@@ -28,7 +28,9 @@ const isActive = (href: string) => path === href || path.startsWith(href + "/");
         ))
       }
       <li>
-        <a class="module label-xs cmd" href="#site-nav">CMD</a>
+        <a class="module label-xs cmd" href="#site-nav" data-palette-trigger>
+          CMD <span class="cmd-hint" data-key-hint aria-hidden="true"></span>
+        </a>
       </li>
     </ul>
   </nav>
@@ -94,9 +96,20 @@ const isActive = (href: string) => path === href || path.startsWith(href + "/");
       justify-content: center;
     }
   }
-  /* Mobile: ident + CMD only; the palette (later, the footer list for now) is the menu */
+  /* §9.1: palette hint in muted mono, desktop only; set by the palette script */
+  .cmd-hint {
+    color: var(--text-muted);
+    margin-left: var(--sp-2);
+  }
+  .cmd-hint:empty {
+    display: none;
+  }
+  /* Mobile: ident + CMD only; the palette is the menu */
   @media (max-width: 767px) {
     .modules li:not(:last-child) {
+      display: none;
+    }
+    .cmd-hint {
       display: none;
     }
   }

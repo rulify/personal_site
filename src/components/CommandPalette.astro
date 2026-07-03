@@ -1,0 +1,344 @@
+---
+// Command palette (§9.2) — rofi-derived overlay, the site's first JS island.
+---
+
+<div class="palette-root" id="cmd-palette" hidden>
+  <div class="palette-backdrop" data-palette-close></div>
+  <div
+    class="palette-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Command palette"
+  >
+    <div class="palette-input-row">
+      <span class="palette-prompt" aria-hidden="true">&gt;</span>
+      <input
+        id="palette-input"
+        type="text"
+        role="combobox"
+        aria-expanded="true"
+        aria-controls="palette-list"
+        aria-autocomplete="list"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="type to filter"
+      />
+    </div>
+    <div class="palette-list" id="palette-list" role="listbox"></div>
+    <p class="palette-empty label-xs" hidden>NO RESULTS</p>
+    <p class="palette-legend label-xs" aria-hidden="true">
+      ↑↓ NAV · ENTR OPEN · ESC CLOSE
+    </p>
+  </div>
+</div>
+
+<style>
+  .palette-root {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+  }
+  .palette-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 11, 15, 0.75);
+  }
+  .palette-panel {
+    position: relative;
+    width: min(480px, 100vw - 32px);
+    margin: 12vh auto 0;
+    background: var(--surface);
+    border: 1px solid var(--border-active);
+    border-radius: var(--radius-m);
+  }
+  @media (min-width: 768px) {
+    .palette-panel {
+      margin-top: 20vh;
+    }
+  }
+  /* Motif slot 3: corner ticks on the panel (§6) */
+  .palette-panel::before,
+  .palette-panel::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 1px solid var(--border-active);
+  }
+  .palette-panel::before {
+    top: -5px;
+    left: -5px;
+    border-right: 0;
+    border-bottom: 0;
+  }
+  .palette-panel::after {
+    bottom: -5px;
+    right: -5px;
+    border-left: 0;
+    border-top: 0;
+  }
+
+  .palette-input-row {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 var(--sp-3);
+    background: var(--surface-raised);
+    border-bottom: 1px solid var(--border);
+    border-radius: var(--radius-m) var(--radius-m) 0 0;
+  }
+  .palette-prompt {
+    font: 400 var(--fs-value-s) / 1.5 var(--font-mono);
+    color: var(--text-muted);
+    margin-right: var(--sp-2);
+  }
+  #palette-input {
+    flex: 1;
+    background: none;
+    border: 0;
+    outline: 0;
+    font: 400 var(--fs-value-s) / 1.5 var(--font-mono);
+    color: var(--text);
+  }
+  #palette-input::placeholder {
+    color: var(--text-disabled);
+  }
+
+  .palette-list {
+    max-height: min(50vh, 400px);
+    overflow-y: auto;
+    padding: var(--sp-2) 0;
+  }
+  .palette-list :global(.palette-group) {
+    display: block;
+    color: var(--text-muted);
+    padding: var(--sp-2) var(--sp-3);
+  }
+  .palette-list :global(.palette-option) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    height: 36px;
+    padding: 0 var(--sp-3);
+    cursor: pointer;
+  }
+  @media (pointer: coarse) {
+    .palette-list :global(.palette-option) {
+      height: 44px;
+    }
+  }
+  .palette-list :global(.palette-option .title) {
+    font: 400 var(--fs-body-s) / 1.55 var(--font-sans);
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .palette-list :global(.palette-option .hint) {
+    font: 400 var(--fs-value-s) / 1.5 var(--font-mono);
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .palette-list :global(.palette-option[aria-selected="true"]) {
+    background: var(--selection);
+  }
+
+  .palette-empty {
+    color: var(--text-muted);
+    text-align: center;
+    padding: var(--sp-5) 0;
+    margin: 0;
+  }
+
+  .palette-legend {
+    display: none;
+    color: var(--text-muted);
+    padding: var(--sp-2) var(--sp-3);
+    border-top: 1px solid var(--border);
+    margin: 0;
+  }
+  @media (min-width: 768px) {
+    .palette-legend {
+      display: block;
+    }
+  }
+</style>
+
+<script>
+  type IndexItem = {
+    title: string;
+    url: string;
+    category: string;
+    tags: string[];
+  };
+
+  const root = document.getElementById("cmd-palette")!;
+  const input = document.getElementById("palette-input") as HTMLInputElement;
+  const list = document.getElementById("palette-list")!;
+  const empty = root.querySelector<HTMLElement>(".palette-empty")!;
+
+  const NAV: IndexItem[] = [
+    { title: "Home", url: "/", category: "↵", tags: [] },
+    { title: "Posts", url: "/posts", category: "↵", tags: [] },
+    { title: "Projects", url: "/projects", category: "↵", tags: [] },
+    { title: "About", url: "/about", category: "↵", tags: [] },
+  ];
+
+  let pages: IndexItem[] | null = null;
+  let visible: IndexItem[] = [];
+  let selected = 0;
+  let lastFocus: Element | null = null;
+
+  // Platform hint on the header CMD module
+  const isMac = /Mac|iP(hone|ad|od)/.test(navigator.platform);
+  document.querySelectorAll("[data-key-hint]").forEach((el) => {
+    el.textContent = isMac ? "⌘K" : "CTRL K";
+  });
+
+  function fuzzy(query: string, text: string): boolean {
+    const q = query.toLowerCase();
+    const t = text.toLowerCase();
+    let qi = 0;
+    for (let i = 0; i < t.length && qi < q.length; i++) {
+      if (t[i] === q[qi]) qi++;
+    }
+    return qi === q.length;
+  }
+
+  function matches(item: IndexItem, q: string): boolean {
+    return (
+      q === "" ||
+      fuzzy(q, item.title) ||
+      item.tags.some((t) => fuzzy(q, t)) ||
+      fuzzy(q, item.category)
+    );
+  }
+
+  function renderGroup(label: string, items: IndexItem[], offset: number): string {
+    if (items.length === 0) return "";
+    const rows = items
+      .map((item, i) => {
+        const idx = offset + i;
+        return `<div class="palette-option" role="option" id="palette-opt-${idx}"
+          aria-selected="${idx === selected}" data-idx="${idx}" data-url="${item.url}">
+          <span class="title"></span><span class="hint">${item.category}</span>
+        </div>`;
+      })
+      .join("");
+    return `<span class="palette-group label-xs" role="presentation">${label}</span>${rows}`;
+  }
+
+  function render() {
+    const q = input.value.trim();
+    const nav = NAV.filter((n) => matches(n, q));
+    const pg = (pages ?? []).filter((p) => matches(p, q));
+    visible = [...nav, ...pg];
+    if (selected >= visible.length) selected = Math.max(0, visible.length - 1);
+
+    list.innerHTML =
+      renderGroup("NAV", nav, 0) + renderGroup("PAGES", pg, nav.length);
+    // titles set via textContent to avoid HTML injection from frontmatter
+    list.querySelectorAll<HTMLElement>(".palette-option").forEach((el, i) => {
+      el.querySelector(".title")!.textContent = visible[i].title;
+    });
+
+    empty.hidden = visible.length > 0;
+    input.setAttribute(
+      "aria-activedescendant",
+      visible.length ? `palette-opt-${selected}` : "",
+    );
+  }
+
+  function select(idx: number) {
+    selected = Math.max(0, Math.min(idx, visible.length - 1));
+    list.querySelectorAll<HTMLElement>(".palette-option").forEach((el, i) => {
+      el.setAttribute("aria-selected", String(i === selected));
+    });
+    input.setAttribute("aria-activedescendant", `palette-opt-${selected}`);
+    document
+      .getElementById(`palette-opt-${selected}`)
+      ?.scrollIntoView({ block: "nearest" });
+  }
+
+  async function open() {
+    lastFocus = document.activeElement;
+    root.hidden = false;
+    document.body.style.overflow = "hidden";
+    input.value = "";
+    selected = 0;
+    render();
+    input.focus();
+    if (pages === null) {
+      try {
+        const res = await fetch("/palette-index.json");
+        pages = (await res.json()) as IndexItem[];
+      } catch {
+        pages = [];
+      }
+      render();
+    }
+  }
+
+  function close() {
+    root.hidden = true;
+    document.body.style.overflow = "";
+    if (lastFocus instanceof HTMLElement) lastFocus.focus();
+  }
+
+  document.querySelectorAll("[data-palette-trigger]").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      open();
+    });
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      root.hidden ? open() : close();
+      return;
+    }
+    if (root.hidden) return;
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      close();
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      select(selected + 1);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      select(selected - 1);
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const item = visible[selected];
+      if (item) window.location.href = item.url;
+    } else if (e.key === "Tab") {
+      // input is the palette's only tab stop; trap focus while open (§11)
+      e.preventDefault();
+      input.focus();
+    }
+  });
+
+  input.addEventListener("input", () => {
+    selected = 0;
+    render();
+  });
+
+  list.addEventListener("click", (e) => {
+    const opt = (e.target as HTMLElement).closest<HTMLElement>(".palette-option");
+    if (opt?.dataset.url) window.location.href = opt.dataset.url;
+  });
+  list.addEventListener("mousemove", (e) => {
+    const opt = (e.target as HTMLElement).closest<HTMLElement>(".palette-option");
+    if (opt) {
+      const idx = Number(opt.dataset.idx);
+      if (idx !== selected) select(idx);
+    }
+  });
+
+  root
+    .querySelector("[data-palette-close]")!
+    .addEventListener("click", close);
+</script>
