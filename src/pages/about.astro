@@ -1,12 +1,17 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { JP } from "../consts";
 ---
 
 <BaseLayout title="About" description="About this site and its operator.">
   <div class="container">
     <article class="measure about">
-      <p class="label-xs kicker">ABOUT</p>
-      <h1>About</h1>
+      <p class="label-xs kicker">
+        <span class="chevrons" aria-hidden="true">›››</span> ABOUT
+      </p>
+      <h1 class="display-mono">
+        ABOUT <span class="jp decal-md" aria-hidden="true">{JP.about}</span>
+      </h1>
       <div class="prose-body body-m">
         <p>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder
@@ -31,7 +36,16 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     color: var(--text-muted);
     margin: 0 0 var(--sp-3);
   }
+  .chevrons {
+    color: var(--link);
+    letter-spacing: 0.1em;
+  }
   .about h1 {
     margin-bottom: var(--sp-5);
+  }
+  .about h1 .jp {
+    font-size: 0.4em;
+    vertical-align: 0.5em;
+    letter-spacing: 0.3em;
   }
 </style>

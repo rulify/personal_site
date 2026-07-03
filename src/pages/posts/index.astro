@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Card from "../../components/Card.astro";
+import { JP } from "../../consts";
 
 const posts = (await getCollection("posts")).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
@@ -20,12 +21,16 @@ const meta = (p: (typeof posts)[number]) =>
 <BaseLayout title="Posts" description="Writeups, box walkthroughs, and build logs.">
   <div class="container">
     <header class="index-header">
-      <p class="label-xs kicker">INDEX / POSTS</p>
-      <h1>Posts</h1>
+      <p class="label-xs kicker">
+        <span class="chevrons" aria-hidden="true">›››</span> INDEX / POSTS
+      </p>
+      <h1 class="display-mono">
+        POSTS <span class="jp decal-md" aria-hidden="true">{JP.posts}</span>
+      </h1>
     </header>
     <ul class="card-grid" role="list">
       {
-        posts.map((p) => (
+        posts.map((p, i) => (
           <li>
             <Card
               href={`/posts/${p.id}`}
@@ -33,6 +38,7 @@ const meta = (p: (typeof posts)[number]) =>
               title={p.data.title}
               excerpt={p.data.description}
               meta={meta(p)}
+              index={i + 1}
             />
           </li>
         ))
@@ -48,5 +54,14 @@ const meta = (p: (typeof posts)[number]) =>
   .kicker {
     color: var(--text-muted);
     margin: 0 0 var(--sp-3);
+  }
+  .chevrons {
+    color: var(--link);
+    letter-spacing: 0.1em;
+  }
+  .index-header .jp {
+    font-size: 0.4em;
+    vertical-align: 0.5em;
+    letter-spacing: 0.3em;
   }
 </style>

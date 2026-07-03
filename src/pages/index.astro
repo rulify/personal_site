@@ -2,7 +2,8 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Card from "../components/Card.astro";
-import { SITE } from "../consts";
+import Kicker from "../components/Kicker.astro";
+import { SITE, JP } from "../consts";
 
 const posts = (await getCollection("posts")).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
@@ -14,23 +15,40 @@ const projects = (await getCollection("projects")).sort(
 const fmt = (d: Date) => d.toISOString().slice(0, 10);
 const tagStr = (tags: string[]) =>
   tags.slice(0, 3).map((t) => t.toUpperCase()).join(" ");
+
+const [identBase, identUnit] = SITE.ident.split("-");
 ---
 
 <BaseLayout title={SITE.ident} description={SITE.description}>
   <div class="container">
-    <header class="home-header">
-      <h1>{SITE.ident}</h1>
-      <p class="value-s tagline">{SITE.tagline}</p>
+    <header class="hero">
+      <div class="hero-main">
+        <p class="jp hero-jp" aria-hidden="true">{JP.unit}</p>
+        <h1 class="display-mono hero-title">
+          {identBase}-<span class="unit-plate">{identUnit}</span>
+        </h1>
+        <p class="value-s hero-tagline">
+          {SITE.tagline}
+          <span class="jp decal-md" aria-hidden="true"> ／ {JP.tagline}</span>
+        </p>
+        <p class="serial hero-serial">
+          {SITE.serial}
+          <span class="barcode decal-md" aria-hidden="true"></span>
+        </p>
+      </div>
+      <dl class="spec-readout value-s decal-md">
+        <div><dt>UNIT</dt><dd>{SITE.ident}</dd></div>
+        <div><dt>TYPE</dt><dd>PERSONAL TERMINAL</dd></div>
+        <div><dt>STATUS</dt><dd class="ok">● ACTIVE</dd></div>
+        <div><dt>BUILD</dt><dd>{SITE.year}.07</dd></div>
+      </dl>
     </header>
 
     <section class="home-section">
-      <div class="section-kicker">
-        <p class="label-xs kicker">RECENT / POSTS</p>
-        <a class="label-xs more" href="/posts">ALL POSTS →</a>
-      </div>
+      <Kicker label="RECENT / POSTS" jp={JP.posts} moreHref="/posts" moreLabel="ALL POSTS" />
       <ul class="card-grid" role="list">
         {
-          posts.slice(0, 3).map((p) => (
+          posts.slice(0, 3).map((p, i) => (
             <li>
               <Card
                 href={`/posts/${p.id}`}
@@ -38,6 +56,7 @@ const tagStr = (tags: string[]) =>
                 title={p.data.title}
                 excerpt={p.data.description}
                 meta={`${fmt(p.data.date)} · ${p.data.readTime} · ${tagStr(p.data.tags)}`}
+                index={i + 1}
               />
             </li>
           ))
@@ -46,13 +65,10 @@ const tagStr = (tags: string[]) =>
     </section>
 
     <section class="home-section">
-      <div class="section-kicker">
-        <p class="label-xs kicker">RECENT / PROJX</p>
-        <a class="label-xs more" href="/projects">ALL PROJECTS →</a>
-      </div>
+      <Kicker label="RECENT / PROJX" jp={JP.projects} moreHref="/projects" moreLabel="ALL PROJECTS" />
       <ul class="card-grid" role="list">
         {
-          projects.slice(0, 3).map((p) => (
+          projects.slice(0, 3).map((p, i) => (
             <li>
               <Card
                 href={`/projects/${p.id}`}
@@ -60,6 +76,7 @@ const tagStr = (tags: string[]) =>
                 title={p.data.title}
                 excerpt={p.data.description}
                 meta={`${fmt(p.data.date)} · ${p.data.status} · ${tagStr(p.data.tags)}`}
+                index={i + 1}
               />
             </li>
           ))
@@ -70,33 +87,89 @@ const tagStr = (tags: string[]) =>
 </BaseLayout>
 
 <style>
-  .home-header {
-    margin: var(--sp-7) 0 var(--sp-7);
-  }
-  .tagline {
-    color: var(--text-muted);
-    margin: var(--sp-3) 0 0;
-  }
-  .home-section {
-    margin-bottom: var(--sp-7);
-  }
-  .section-kicker {
+  .hero {
+    position: relative;
     display: flex;
-    align-items: baseline;
+    flex-wrap: wrap;
+    align-items: flex-end;
     justify-content: space-between;
-    margin-bottom: var(--sp-4);
+    gap: var(--sp-5);
+    padding: var(--sp-7) 0 var(--sp-6);
+    margin-bottom: var(--sp-7);
+    border-bottom: 1px solid var(--border);
   }
-  .kicker {
+  /* crosshair registration marks, top corners */
+  .hero::before,
+  .hero::after {
+    content: "+";
+    position: absolute;
+    top: var(--sp-4);
+    font: 400 var(--fs-value-s) / 1 var(--font-mono);
+    color: var(--text-disabled);
+  }
+  .hero::before {
+    left: 0;
+  }
+  .hero::after {
+    right: 0;
+  }
+
+  .hero-jp {
+    margin: 0 0 var(--sp-3);
+  }
+  .hero-title {
+    margin: 0 0 var(--sp-3);
+  }
+  .hero-tagline {
+    font-family: var(--font-mono);
     color: var(--text-muted);
+    margin: 0 0 var(--sp-3);
+  }
+  .hero-serial {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
     margin: 0;
   }
-  .more {
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: color var(--transition);
+
+  .spec-readout {
+    font-family: var(--font-mono);
+    min-width: 240px;
+    margin: 0;
+    padding: var(--sp-4);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    position: relative;
   }
-  .more:hover,
-  .more:focus-visible {
-    color: var(--text);
+  .spec-readout::before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: 10px;
+    height: 10px;
+    border-top: 1px solid var(--border-active);
+    border-left: 1px solid var(--border-active);
+  }
+  .spec-readout div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-5);
+  }
+  .spec-readout div + div {
+    margin-top: var(--sp-2);
+  }
+  .spec-readout dt {
+    color: var(--text-muted);
+  }
+  .spec-readout dd {
+    margin: 0;
+  }
+  .spec-readout .ok {
+    color: var(--ok-text);
+  }
+
+  .home-section {
+    margin-bottom: var(--sp-7);
   }
 </style>

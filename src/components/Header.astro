@@ -12,7 +12,10 @@ const isActive = (href: string) => path === href || path.startsWith(href + "/");
 
 <header class="site-header">
   <nav class="container header-inner" aria-label="Primary">
-    <a class="ident label-xs" href="/">{SITE.ident}</a>
+    <a class="ident label-xs" href="/">
+      <span class="ident-block" aria-hidden="true"></span>
+      {SITE.ident}
+    </a>
     <ul class="modules" role="list">
       {
         modules.map((m) => (
@@ -53,9 +56,16 @@ const isActive = (href: string) => path === href || path.startsWith(href + "/");
   .ident {
     display: flex;
     align-items: center;
+    gap: var(--sp-2);
     color: var(--text);
     text-decoration: none;
     padding-right: var(--sp-3);
+  }
+  /* unit marker: the one purple block in the strip */
+  .ident-block {
+    width: 8px;
+    height: 14px;
+    background: var(--accent);
   }
   .modules {
     display: flex;

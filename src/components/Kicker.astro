@@ -1,0 +1,64 @@
+---
+interface Props {
+  label: string;
+  jp?: string;
+  moreHref?: string;
+  moreLabel?: string;
+}
+
+const { label, jp, moreHref, moreLabel } = Astro.props;
+---
+
+<div class="kicker-row">
+  <p class="label-xs kicker-label">
+    <span class="kicker-chevrons" aria-hidden="true">›››</span>
+    {label}
+  </p>
+  <span class="kicker-rule decal-md" aria-hidden="true"></span>
+  {jp && <span class="jp decal-md" aria-hidden="true">{jp}</span>}
+  {
+    moreHref && (
+      <a class="label-xs kicker-more" href={moreHref}>
+        {moreLabel ?? "MORE"} →
+      </a>
+    )
+  }
+</div>
+
+<style>
+  .kicker-row {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-4);
+  }
+  .kicker-label {
+    color: var(--text-muted);
+    margin: 0;
+    white-space: nowrap;
+  }
+  .kicker-chevrons {
+    color: var(--link);
+    letter-spacing: 0.1em;
+    margin-right: var(--sp-1);
+  }
+  .kicker-rule {
+    flex: 1;
+    height: 5px;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--border) 0 6px,
+      transparent 6px 14px
+    );
+  }
+  .kicker-more {
+    color: var(--text-muted);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color var(--transition);
+  }
+  .kicker-more:hover,
+  .kicker-more:focus-visible {
+    color: var(--text);
+  }
+</style>

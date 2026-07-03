@@ -1,13 +1,19 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { JP } from "../consts";
 ---
 
 <BaseLayout title="404" description="No such route.">
   <div class="container">
     <div class="notfound">
-      <p class="label-xs code">ERR / 404</p>
-      <h1>NO SUCH ROUTE</h1>
+      <p class="label-xs code">
+        <span aria-hidden="true">✳</span> ERR / 404
+      </p>
+      <h1 class="display-mono">
+        NO SUCH ROUTE <span class="jp decal-md" aria-hidden="true">{JP.notFound}</span>
+      </h1>
       <p class="value-s detail">The requested path does not resolve.</p>
+      <div class="hazard-strip nf-strip" aria-hidden="true"></div>
       <a class="label-xs home" href="/">RETURN /</a>
     </div>
   </div>
@@ -25,9 +31,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   .notfound h1 {
     margin-bottom: var(--sp-3);
   }
+  .notfound h1 .jp {
+    font-size: 0.4em;
+    vertical-align: 0.5em;
+    letter-spacing: 0.3em;
+  }
   .detail {
     color: var(--text-muted);
-    margin: 0 0 var(--sp-6);
+    margin: 0 0 var(--sp-4);
+  }
+  .nf-strip {
+    max-width: 240px;
+    margin-bottom: var(--sp-6);
   }
   .home {
     display: inline-block;

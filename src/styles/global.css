@@ -54,6 +54,16 @@
     U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
     U+2212, U+2215, U+FEFF, U+FFFD;
 }
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-mono-latin-700.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 /* ---------- Tokens ---------- */
 
@@ -65,7 +75,8 @@
   --surface-raised: #28303c;
   --surface-high: #2f3847;
   --border: #35404c;
-  --border-active: #505d6d;
+  /* board-alternate shade: the main #505d6d fails 3:1 non-text contrast for focus outlines */
+  --border-active: #607082;
   --text: #e7ecf2;
   --text-muted: #8e9aaa;
   --text-disabled: #636c79;
@@ -83,6 +94,9 @@
   /* §4 Typography */
   --font-sans: "IBM Plex Sans", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+  /* decorative CJK annotations ride on system fonts — never running prose */
+  --font-jp: "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", "Noto Sans JP",
+    "Yu Gothic", "Meiryo", sans-serif;
 
   --fs-label-xs: 0.75rem;
   --fs-value-s: 0.8125rem;
@@ -92,6 +106,7 @@
   --fs-header-l: 1.25rem;
   --fs-heading-xl: clamp(1.375rem, 1.2rem + 0.9vw, 1.625rem);
   --fs-display: clamp(1.75rem, 1.35rem + 2.2vw, 2.375rem);
+  --fs-display-mono: clamp(2.25rem, 1.4rem + 4.5vw, 4rem);
   --fs-code: 0.84375rem;
 
   --track-label: 0.08em;
@@ -126,7 +141,12 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
+  /* faint blueprint grid — equipment-panel undertone */
+  background-image:
+    linear-gradient(rgba(53, 64, 76, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(53, 64, 76, 0.16) 1px, transparent 1px);
+  background-size: 48px 48px;
   color: var(--text);
   font: 400 var(--fs-body-s) / 1.55 var(--font-sans);
 }
@@ -294,6 +314,75 @@ hr {
 
 .body-m {
   font: 400 var(--fs-body-m) / 1.7 var(--font-sans);
+}
+
+/* Display mono: bold uppercase wordmarks and page idents */
+.display-mono {
+  font: 700 var(--fs-display-mono) / 1.05 var(--font-mono);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* ---------- Decal kit (mecha plate language, drawn not imaged) ---------- */
+
+/* decorative CJK annotation — always aria-hidden in markup */
+.jp {
+  font-family: var(--font-jp);
+  font-size: var(--fs-label-xs);
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+}
+
+.serial {
+  font: 400 var(--fs-label-xs) / 1 var(--font-mono);
+  letter-spacing: 0.1em;
+  color: var(--text-disabled);
+  text-transform: uppercase;
+}
+
+/* 45° hazard stripes in chrome greys — hazard colours stay semantic */
+.hazard-strip {
+  height: 5px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--border) 0 6px,
+    transparent 6px 14px
+  );
+}
+.hazard-strip.accent {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--accent) 0 6px,
+    transparent 6px 14px
+  );
+}
+
+/* pseudo-random barcode block via layered line gradients */
+.barcode {
+  width: 96px;
+  height: 20px;
+  background:
+    repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 5px),
+    repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 8px),
+    repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 13px);
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+/* inverted unit plate — the boxed "01" from the decal sheets */
+.unit-plate {
+  display: inline-block;
+  font: 700 inherit;
+  background: var(--accent);
+  color: var(--text);
+  padding: 0 0.18em;
+}
+
+/* most decals drop below 768px; structural brackets stay (§6 spirit) */
+@media (max-width: 767px) {
+  .decal-md {
+    display: none;
+  }
 }
 
 .visually-hidden {
