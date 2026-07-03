@@ -1,0 +1,110 @@
+/* Article / writeup prose (design-system-v1.md §9.4) */
+
+.prose {
+  font: 400 var(--fs-body-m) / 1.7 var(--font-sans);
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+.prose h2 {
+  margin: var(--sp-7) 0 var(--sp-3);
+}
+.prose h3 {
+  margin: var(--sp-6) 0 var(--sp-2);
+}
+
+.prose a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.prose b,
+.prose strong {
+  font-weight: 600;
+}
+
+.prose ul,
+.prose ol {
+  margin: 0 0 var(--sp-4);
+  padding-left: var(--sp-5);
+}
+.prose li + li {
+  margin-top: var(--sp-2);
+}
+
+.prose blockquote {
+  margin: 0 0 var(--sp-4);
+  padding-left: var(--sp-4);
+  border-left: 2px solid var(--border-active);
+  color: var(--text-muted);
+}
+
+.prose figure {
+  margin: 0 0 var(--sp-4);
+}
+.prose figure img {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+}
+.prose figcaption {
+  font: 400 var(--fs-value-s) / 1.5 var(--font-mono);
+  color: var(--text-muted);
+  margin-top: var(--sp-2);
+}
+
+/* Inline code (§9.5) */
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--surface-raised);
+  border-radius: var(--radius-s);
+  padding: 2px 5px;
+}
+
+/* Tables: mono data, wrapper scrolls, the page never does (§5, §9.4) */
+.prose .table-wrap {
+  overflow-x: auto;
+  margin: 0 0 var(--sp-4);
+}
+.prose table {
+  border-collapse: collapse;
+  font: 400 var(--fs-value-s) / 1.5 var(--font-mono);
+}
+.prose th {
+  font: 500 var(--fs-label-xs) / 1 var(--font-mono);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: left;
+}
+.prose th,
+.prose td {
+  border-bottom: 1px solid var(--border);
+  padding: var(--sp-2) var(--sp-4) var(--sp-2) 0;
+}
+
+/* Heading anchors: mono #, muted, visible on hover/focus */
+.heading-anchor {
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-left: var(--sp-2);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.prose h2:hover .heading-anchor,
+.prose h3:hover .heading-anchor,
+.heading-anchor:focus-visible {
+  opacity: 1;
+}
+.heading-anchor:hover {
+  color: var(--text);
+}
+
+/* Footnotes / asides */
+.prose aside,
+.prose .footnote {
+  font: 400 var(--fs-body-s) / 1.55 var(--font-sans);
+  color: var(--text-muted);
+}

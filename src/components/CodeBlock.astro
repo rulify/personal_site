@@ -1,0 +1,103 @@
+---
+import { Code } from "astro:components";
+import type { BundledLanguage } from "shiki";
+
+interface Props {
+  code: string;
+  lang: BundledLanguage;
+  filename?: string;
+}
+
+const { code, lang, filename } = Astro.props;
+---
+
+<figure class="code-block">
+  <div class="code-header">
+    <span class="label-xs code-lang">{filename ?? lang}</span>
+    <button class="label-xs code-copy" type="button" data-copy>COPY</button>
+  </div>
+  <Code code={code} lang={lang} theme="css-variables" />
+</figure>
+
+<style is:global>
+  /* Syntax theme from the palette — muted ANSI precedent (§9.5) */
+  :root {
+    --astro-code-foreground: var(--text);
+    --astro-code-background: transparent;
+    --astro-code-token-comment: var(--text-disabled);
+    --astro-code-token-keyword: var(--link);
+    --astro-code-token-string: #c9a35c;
+    --astro-code-token-string-expression: #c9a35c;
+    --astro-code-token-function: var(--text);
+    --astro-code-token-constant: var(--text);
+    --astro-code-token-parameter: var(--text-muted);
+    --astro-code-token-punctuation: var(--text-muted);
+    --astro-code-token-link: var(--link);
+  }
+  .code-block pre.astro-code {
+    margin: 0;
+    padding: var(--sp-4);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font: 400 var(--fs-code) / 1.6 var(--font-mono);
+    border-radius: 0 0 var(--radius-m) var(--radius-m);
+  }
+</style>
+
+<style>
+  .code-block {
+    margin: 0 0 var(--sp-4);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-m);
+  }
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 32px;
+    padding: 0 var(--sp-3);
+    background: var(--surface-raised);
+    border-bottom: 1px solid var(--border);
+    border-radius: var(--radius-m) var(--radius-m) 0 0;
+  }
+  .code-lang {
+    color: var(--text-muted);
+  }
+  .code-copy {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color var(--transition);
+  }
+  .code-copy:hover {
+    color: var(--text);
+  }
+  .code-copy.ok {
+    color: var(--ok-text);
+  }
+  @media (pointer: coarse) {
+    .code-copy {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const pre = btn.closest(".code-block")?.querySelector("pre");
+      if (!pre) return;
+      await navigator.clipboard.writeText(pre.textContent ?? "");
+      btn.textContent = "OK";
+      btn.classList.add("ok");
+      setTimeout(() => {
+        btn.textContent = "COPY";
+        btn.classList.remove("ok");
+      }, 1200);
+    });
+  });
+</script>

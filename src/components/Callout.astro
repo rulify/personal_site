@@ -1,0 +1,53 @@
+---
+interface Props {
+  kind?: "note" | "ok" | "warn" | "fail";
+}
+
+const { kind = "note" } = Astro.props;
+
+const labels = { note: "NOTE", ok: "OK", warn: "WARN", fail: "FAIL" };
+---
+
+<div class={`callout callout-${kind}`}>
+  <p class="label-xs callout-label">{labels[kind]}</p>
+  <div class="callout-body"><slot /></div>
+</div>
+
+<style>
+  .callout {
+    background: var(--surface);
+    border-left: 2px solid var(--border-active);
+    border-radius: var(--radius-s);
+    padding: var(--sp-3);
+    margin: 0 0 var(--sp-4);
+  }
+  .callout-label {
+    color: var(--text-muted);
+    margin: 0 0 var(--sp-2);
+  }
+  .callout-body {
+    font: 400 var(--fs-body-s) / 1.55 var(--font-sans);
+  }
+  .callout-body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .callout-ok {
+    border-left-color: var(--ok);
+  }
+  .callout-ok .callout-label {
+    color: var(--ok-text);
+  }
+  .callout-warn {
+    border-left-color: var(--warn);
+  }
+  .callout-warn .callout-label {
+    color: var(--warn);
+  }
+  .callout-fail {
+    border-left-color: var(--error);
+  }
+  .callout-fail .callout-label {
+    color: var(--error-text);
+  }
+</style>

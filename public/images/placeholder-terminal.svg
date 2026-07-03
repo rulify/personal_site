@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <rect width="1200" height="675" fill="#080b0f"/>
+  <rect x="60" y="48" width="1080" height="579" rx="8" fill="#0f141c" stroke="#35404c"/>
+  <rect x="60" y="48" width="1080" height="40" rx="8" fill="#28303c"/>
+  <rect x="60" y="72" width="1080" height="16" fill="#28303c"/>
+  <text x="84" y="74" font-family="monospace" font-size="14" letter-spacing="1.5" fill="#8e9aaa">TERM_01 — PLACEHOLDER</text>
+  <g font-family="monospace" font-size="16">
+    <text x="92" y="136" fill="#8e9aaa">$ ./run_sequence --check</text>
+    <text x="92" y="172" fill="#636c79"># placeholder output, replaced by a real screenshot</text>
+    <text x="92" y="208" fill="#e7ecf2">MODULE_A .......... <tspan fill="#22a06b">OK</tspan></text>
+    <text x="92" y="244" fill="#e7ecf2">MODULE_B .......... <tspan fill="#22a06b">OK</tspan></text>
+    <text x="92" y="280" fill="#e7ecf2">MODULE_C .......... <tspan fill="#e0a12e">WARN</tspan></text>
+    <text x="92" y="316" fill="#e7ecf2">MODULE_D .......... <tspan fill="#e04b4b">FAIL</tspan></text>
+    <text x="92" y="352" fill="#8e9aaa">$ <tspan fill="#a48ae8">retry</tspan> --module d --verbose</text>
+    <text x="92" y="388" fill="#e7ecf2">MODULE_D .......... <tspan fill="#22a06b">OK</tspan></text>
+    <text x="92" y="424" fill="#8e9aaa">$ █</text>
+  </g>
+</svg>
