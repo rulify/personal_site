@@ -1,0 +1,271 @@
+/* SITE_IDENT — tokens + base (design-system-v1.md §3–§6, build order §14 step 1) */
+
+/* ---------- Fonts (§4, §12) ---------- */
+/* Self-hosted woff2, latin subset. Five files total:
+   Sans 400/500/600, Mono 400/500. Nothing else ships. */
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-sans-latin-400.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-sans-latin-500.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-sans-latin-600.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-mono-latin-400.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-mono-latin-500.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ---------- Tokens ---------- */
+
+:root {
+  /* §3 Color */
+  --bg: #080b0f;
+  --surface: #0f141c;
+  --surface-hover: #212731;
+  --surface-raised: #28303c;
+  --surface-high: #2f3847;
+  --border: #35404c;
+  --border-active: #505d6d;
+  --text: #e7ecf2;
+  --text-muted: #8e9aaa;
+  --text-disabled: #636c79;
+  --accent: #3d177f;
+  --accent-deep: #321464;
+  --selection: #1c1430;
+  --link: #a48ae8;
+  --link-hover: #c4b0f4;
+  --warn: #e0a12e;
+  --error: #a31621;
+  --error-text: #e04b4b;
+  --ok: #167a52;
+  --ok-text: #22a06b;
+
+  /* §4 Typography */
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+
+  --fs-label-xs: 0.75rem;
+  --fs-value-s: 0.8125rem;
+  --fs-body-s: 0.875rem;
+  --fs-body-m: clamp(1rem, 0.95rem + 0.25vw, 1.0625rem);
+  --fs-title-m: 1rem;
+  --fs-header-l: 1.25rem;
+  --fs-heading-xl: clamp(1.375rem, 1.2rem + 0.9vw, 1.625rem);
+  --fs-display: clamp(1.75rem, 1.35rem + 2.2vw, 2.375rem);
+  --fs-code: 0.84375rem;
+
+  --track-label: 0.08em;
+
+  /* §5 Spacing, radius, layout */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
+  --radius-s: 4px;   /* tags, images, callouts */
+  --radius-m: 8px;   /* cards, code blocks, palette */
+
+  --site-max: 1120px; /* outer cap for chrome and card grids */
+  --measure: 66ch;    /* hard cap on prose width */
+
+  /* §11 Transitions: hover/focus colour and border changes only */
+  --transition: 140ms ease-out;
+}
+
+/* Breakpoints (§5), mobile-first — media queries can't read custom props:
+   sm ≥ 640px · md ≥ 768px · lg ≥ 1024px */
+
+/* ---------- Base document (§14 step 1) ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 var(--fs-body-s) / 1.55 var(--font-sans);
+}
+
+::selection {
+  background: var(--selection);
+  color: var(--text);
+}
+
+/* §4 scale — sentence case bodies, title case titles; uppercase only via .label-xs */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  overflow-wrap: break-word;
+}
+h1 {
+  font: 600 var(--fs-display) / 1.15 var(--font-sans);
+  letter-spacing: -0.01em;
+}
+h2 {
+  font: 600 var(--fs-heading-xl) / 1.25 var(--font-sans);
+}
+h3 {
+  font: 500 var(--fs-header-l) / 1.3 var(--font-sans);
+}
+h4,
+h5,
+h6 {
+  font: 500 var(--fs-title-m) / 1.35 var(--font-sans);
+}
+
+p {
+  margin: 0 0 var(--sp-4);
+}
+
+/* Purple text means exactly one thing: a link (§3) */
+a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  transition: color var(--transition);
+}
+a:hover,
+a:focus-visible {
+  color: var(--link-hover);
+}
+
+code,
+kbd,
+samp,
+pre {
+  font: 400 var(--fs-code) / 1.6 var(--font-mono);
+}
+
+/* Overflow rule (§5): anything wider than the viewport scrolls within its own box */
+pre {
+  margin: 0 0 var(--sp-4);
+  overflow-x: auto;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+img {
+  border-radius: var(--radius-s);
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: var(--sp-6) 0;
+}
+
+/* §11 Focus — uniform, never removed */
+:focus-visible {
+  outline: 2px solid var(--border-active);
+  outline-offset: 2px;
+}
+
+/* §11 Reduced motion — transitions collapse to 0ms */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}
+
+/* ---------- Layout containers (§5) ---------- */
+
+.container {
+  max-width: var(--site-max);
+  margin-inline: auto;
+  padding-inline: var(--sp-4);
+}
+@media (min-width: 768px) {
+  .container {
+    padding-inline: var(--sp-5);
+  }
+}
+
+/* The reading column: chrome may be wide; text never is */
+.measure {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+/* ---------- Type roles (§4) ---------- */
+
+.label-xs {
+  font: 500 var(--fs-label-xs) / 1 var(--font-mono);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+
+.value-s {
+  font: 400 var(--fs-value-s) / 1.5 var(--font-mono);
+}
+
+.body-m {
+  font: 400 var(--fs-body-m) / 1.7 var(--font-sans);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
