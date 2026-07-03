@@ -8,7 +8,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <p class="label-xs kicker">
         <span class="chevrons" aria-hidden="true">›››</span> ABOUT
       </p>
-      <h1 class="display-mono">ABOUT</h1>
+      <div class="title-row">
+        <h1 class="display-mono">ABOUT</h1>
+        <span class="hazard-strip title-rule decal-md" aria-hidden="true"></span>
+      </div>
       <div class="prose-body body-m">
         <p>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder
@@ -37,7 +40,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     color: var(--link);
     letter-spacing: 0.1em;
   }
-  .about h1 {
+  .title-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-4);
     margin-bottom: var(--sp-5);
+  }
+  .title-rule {
+    flex: 1;
   }
 </style>

@@ -23,7 +23,10 @@ const meta = (p: (typeof posts)[number]) =>
       <p class="label-xs kicker">
         <span class="chevrons" aria-hidden="true">›››</span> INDEX / POSTS
       </p>
-      <h1 class="display-mono">POSTS</h1>
+      <div class="title-row">
+        <h1 class="display-mono">POSTS</h1>
+        <span class="hazard-strip title-rule decal-md" aria-hidden="true"></span>
+      </div>
     </header>
     <ul class="card-grid" role="list">
       {
@@ -55,5 +58,13 @@ const meta = (p: (typeof posts)[number]) =>
   .chevrons {
     color: var(--link);
     letter-spacing: 0.1em;
+  }
+  .title-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-4);
+  }
+  .title-rule {
+    flex: 1;
   }
 </style>

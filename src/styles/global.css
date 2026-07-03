@@ -338,6 +338,24 @@ hr {
     transparent 6px 14px
   );
 }
+/* short purple segment — a hint, never a full strip */
+.hazard-strip.accent {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--accent) 0 6px,
+    transparent 6px 14px
+  );
+}
+
+/* dot-matrix cluster from the decal sheets — quiet corner filler */
+.dot-grid {
+  width: 76px;
+  height: 30px;
+  background-image: radial-gradient(currentColor 1.5px, transparent 1.6px);
+  background-size: 12px 10px;
+  color: var(--text-disabled);
+  opacity: 0.7;
+}
 /* pseudo-random barcode block via layered line gradients */
 .barcode {
   width: 96px;

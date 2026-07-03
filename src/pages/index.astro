@@ -28,12 +28,15 @@ const tagStr = (tags: string[]) =>
           <span class="barcode decal-md" aria-hidden="true"></span>
         </p>
       </div>
-      <dl class="spec-readout value-s decal-md">
-        <div><dt>UNIT</dt><dd>{SITE.ident}</dd></div>
-        <div><dt>TYPE</dt><dd>PERSONAL TERMINAL</dd></div>
-        <div><dt>STATUS</dt><dd class="ok">● ACTIVE</dd></div>
-        <div><dt>BUILD</dt><dd>{SITE.year}.07</dd></div>
-      </dl>
+      <div class="hero-side decal-md">
+        <dl class="spec-readout value-s">
+          <div><dt>UNIT</dt><dd>{SITE.ident}</dd></div>
+          <div><dt>TYPE</dt><dd>PERSONAL TERMINAL</dd></div>
+          <div><dt>STATUS</dt><dd class="ok">● ACTIVE</dd></div>
+          <div><dt>BUILD</dt><dd>{SITE.year}.07</dd></div>
+        </dl>
+        <div class="dot-grid" aria-hidden="true"></div>
+      </div>
     </header>
 
     <section class="home-section">
@@ -123,6 +126,12 @@ const tagStr = (tags: string[]) =>
     margin: 0;
   }
 
+  .hero-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--sp-3);
+  }
   .spec-readout {
     font-family: var(--font-mono);
     min-width: 240px;
@@ -132,6 +141,7 @@ const tagStr = (tags: string[]) =>
     background: var(--surface);
     position: relative;
   }
+  /* the one purple hint on the readout — corner tick, not a fill */
   .spec-readout::before {
     content: "";
     position: absolute;
@@ -139,8 +149,18 @@ const tagStr = (tags: string[]) =>
     left: -5px;
     width: 10px;
     height: 10px;
-    border-top: 1px solid var(--border-active);
-    border-left: 1px solid var(--border-active);
+    border-top: 2px solid var(--accent);
+    border-left: 2px solid var(--accent);
+  }
+  .spec-readout::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    width: 10px;
+    height: 10px;
+    border-bottom: 1px solid var(--border-active);
+    border-right: 1px solid var(--border-active);
   }
   .spec-readout div {
     display: flex;

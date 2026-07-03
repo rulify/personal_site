@@ -29,12 +29,14 @@ const { href, eyebrow, title, excerpt, meta, status, statusTone, index } =
   <p class="card-meta value-s">
     {
       status && (
-        <span class:list={["card-status", statusTone]}>
-          <span aria-hidden="true">●</span> {status} ·
-        </span>
+        <>
+          <span class:list={["card-status", statusTone]}>
+            <span aria-hidden="true">●</span> {status}
+          </span>
+          {` · `}
+        </>
       )
-    }
-    {meta}
+    }{meta}
   </p>
 </article>
 
