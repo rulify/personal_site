@@ -1,9 +1,10 @@
-# local reference docs (agent/AI files stay out of the repo)
-CLAUDE.md
-AGENTS.md
-design-system-v1.md
-*.md
-!README.md
+# local reference docs, root only (agent/AI files stay out of the repo;
+# content markdown under src/ must stay trackable)
+/CLAUDE.md
+/AGENTS.md
+/design-system-v1.md
+/*.md
+!/README.md
 
 # build output
 dist/
