@@ -1,0 +1,52 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Card from "../../components/Card.astro";
+
+const projects = (await getCollection("projects")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const meta = (p: (typeof projects)[number]) =>
+  [
+    p.data.date.toISOString().slice(0, 10),
+    p.data.status,
+    p.data.tags.slice(0, 3).map((t) => t.toUpperCase()).join(" "),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+---
+
+<BaseLayout title="Projects" description="Portfolio-style project entries.">
+  <main class="container">
+    <header class="index-header">
+      <p class="label-xs kicker">INDEX / PROJX</p>
+      <h1>Projects</h1>
+    </header>
+    <ul class="card-grid" role="list">
+      {
+        projects.map((p) => (
+          <li>
+            <Card
+              href={`/projects/${p.id}`}
+              eyebrow="PROJX"
+              title={p.data.title}
+              excerpt={p.data.description}
+              meta={meta(p)}
+            />
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+</BaseLayout>
+
+<style>
+  .index-header {
+    margin: var(--sp-7) 0 var(--sp-6);
+  }
+  .kicker {
+    color: var(--text-muted);
+    margin: 0 0 var(--sp-3);
+  }
+</style>

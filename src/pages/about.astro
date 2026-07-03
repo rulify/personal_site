@@ -1,0 +1,37 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="About" description="About this site and its operator.">
+  <main class="container">
+    <article class="measure about">
+      <p class="label-xs kicker">ABOUT</p>
+      <h1>About</h1>
+      <div class="prose-body body-m">
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder
+          bio copy until the real thing is written. Sed do eiusmod tempor
+          incididunt ut labore et dolore magna aliqua.
+        </p>
+        <p>
+          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+          nisi ut aliquip ex ea commodo consequat.
+        </p>
+      </div>
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  .about {
+    margin-top: var(--sp-7);
+    margin-bottom: var(--sp-8);
+  }
+  .kicker {
+    color: var(--text-muted);
+    margin: 0 0 var(--sp-3);
+  }
+  .about h1 {
+    margin-bottom: var(--sp-5);
+  }
+</style>

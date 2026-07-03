@@ -7,13 +7,14 @@ interface Props {
   description?: string;
   category: string;
   date: string;
-  readTime: string;
+  /* read time for posts, status for projects (§8) */
+  stat: string;
   tags?: string[];
   prev?: { title: string; href: string };
   next?: { title: string; href: string };
 }
 
-const { title, description, category, date, readTime, tags = [], prev, next } = Astro.props;
+const { title, description, category, date, stat, tags = [], prev, next } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description}>
@@ -23,7 +24,7 @@ const { title, description, category, date, readTime, tags = [], prev, next } = 
         <p class="label-xs eyebrow">{category}</p>
         <h1>{title}</h1>
         <div class="article-meta value-s">
-          {date} · {readTime} · {tags.map((t) => t.toUpperCase()).join(" ")}
+          {date} · {stat} · {tags.map((t) => t.toUpperCase()).join(" ")}
         </div>
       </header>
 

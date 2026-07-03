@@ -1,0 +1,93 @@
+---
+interface Props {
+  href: string;
+  eyebrow: string;
+  title: string;
+  excerpt: string;
+  meta: string;
+}
+
+const { href, eyebrow, title, excerpt, meta } = Astro.props;
+---
+
+<article class="card">
+  <p class="label-xs card-eyebrow">{eyebrow}</p>
+  <h2 class="card-title"><a href={href}>{title}</a></h2>
+  <p class="card-excerpt">{excerpt}</p>
+  <p class="card-meta value-s">{meta}</p>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    height: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-m);
+    padding: var(--sp-4);
+    transition:
+      background var(--transition),
+      border-color var(--transition);
+  }
+  /* Motif slot 2: one bracket per card, top-left (§6) */
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 10px;
+    height: 10px;
+    border-top: 1px solid var(--text-muted);
+    border-left: 1px solid var(--text-muted);
+    transition: border-color var(--transition);
+  }
+  .card:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-active);
+  }
+  .card:hover::before {
+    border-color: var(--border-active);
+  }
+
+  .card-eyebrow {
+    color: var(--text-muted);
+    margin: 0;
+  }
+  /* 6px eyebrow→title gap: the OS title/body gap (§9.3) */
+  .card-title {
+    font: 500 var(--fs-title-m) / 1.35 var(--font-sans);
+    margin: 6px 0 var(--sp-2);
+  }
+  /* Whole card is one link; the title is the accessible name */
+  .card-title a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  .card-title a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-m);
+  }
+  .card-title a:focus-visible {
+    outline: none;
+  }
+  .card:has(a:focus-visible) {
+    outline: 2px solid var(--border-active);
+    outline-offset: 2px;
+  }
+
+  .card-excerpt {
+    font: 400 var(--fs-body-s) / 1.55 var(--font-sans);
+    color: var(--text-muted);
+    margin: 0 0 var(--sp-3);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-meta {
+    color: var(--text-muted);
+    margin: 0;
+  }
+</style>

@@ -1,26 +1,101 @@
 ---
+import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Card from "../components/Card.astro";
+
+const posts = (await getCollection("posts")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const projects = (await getCollection("projects")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+const tagStr = (tags: string[]) =>
+  tags.slice(0, 3).map((t) => t.toUpperCase()).join(" ");
 ---
 
 <BaseLayout title="SITE_IDENT" description="Blogs and internet playground experiments.">
   <main class="container">
-    <article class="measure">
-      <p class="label-xs" style="color: var(--text-muted); margin-bottom: var(--sp-3);">
-        SITE_IDENT / TOKENS
-      </p>
-      <h1>Tokens and base styles</h1>
-      <p class="value-s" style="color: var(--text-muted); margin: var(--sp-2) 0 var(--sp-5);">
-        2026-07-03 · build order step 1
-      </p>
-      <p class="body-m">
-        Color, typography, spacing, and layout tokens from the design system are
-        live. This page exercises the base document styles: prose at
-        <code>body-m</code>, a <a href="/">link in purple</a>, and mono
-        metadata above.
-      </p>
-      <p class="body-m">
-        Step 2 preview: <a href="/posts/sample-writeup">the sample writeup page</a>.
-      </p>
-    </article>
+    <header class="home-header">
+      <h1>SITE_IDENT</h1>
+      <p class="value-s tagline">writeups · projects · internet playground</p>
+    </header>
+
+    <section class="home-section">
+      <div class="section-kicker">
+        <p class="label-xs kicker">RECENT / POSTS</p>
+        <a class="label-xs more" href="/posts">ALL POSTS →</a>
+      </div>
+      <ul class="card-grid" role="list">
+        {
+          posts.slice(0, 3).map((p) => (
+            <li>
+              <Card
+                href={`/posts/${p.id}`}
+                eyebrow={p.data.category}
+                title={p.data.title}
+                excerpt={p.data.description}
+                meta={`${fmt(p.data.date)} · ${p.data.readTime} · ${tagStr(p.data.tags)}`}
+              />
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="home-section">
+      <div class="section-kicker">
+        <p class="label-xs kicker">RECENT / PROJX</p>
+        <a class="label-xs more" href="/projects">ALL PROJECTS →</a>
+      </div>
+      <ul class="card-grid" role="list">
+        {
+          projects.slice(0, 3).map((p) => (
+            <li>
+              <Card
+                href={`/projects/${p.id}`}
+                eyebrow="PROJX"
+                title={p.data.title}
+                excerpt={p.data.description}
+                meta={`${fmt(p.data.date)} · ${p.data.status} · ${tagStr(p.data.tags)}`}
+              />
+            </li>
+          ))
+        }
+      </ul>
+    </section>
   </main>
 </BaseLayout>
+
+<style>
+  .home-header {
+    margin: var(--sp-7) 0 var(--sp-7);
+  }
+  .tagline {
+    color: var(--text-muted);
+    margin: var(--sp-3) 0 0;
+  }
+  .home-section {
+    margin-bottom: var(--sp-7);
+  }
+  .section-kicker {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--sp-4);
+  }
+  .kicker {
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .more {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--transition);
+  }
+  .more:hover,
+  .more:focus-visible {
+    color: var(--text);
+  }
+</style>

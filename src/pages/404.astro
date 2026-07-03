@@ -1,0 +1,48 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="404" description="No such route.">
+  <main class="container">
+    <div class="notfound">
+      <p class="label-xs code">ERR / 404</p>
+      <h1>NO SUCH ROUTE</h1>
+      <p class="value-s detail">The requested path does not resolve.</p>
+      <a class="label-xs home" href="/">RETURN /</a>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .notfound {
+    max-width: var(--measure);
+    margin: var(--sp-8) auto;
+  }
+  .code {
+    color: var(--error-text);
+    margin: 0 0 var(--sp-3);
+  }
+  .notfound h1 {
+    margin-bottom: var(--sp-3);
+  }
+  .detail {
+    color: var(--text-muted);
+    margin: 0 0 var(--sp-6);
+  }
+  .home {
+    display: inline-block;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-s);
+    padding: var(--sp-2) var(--sp-3);
+    text-decoration: none;
+    transition:
+      color var(--transition),
+      border-color var(--transition);
+  }
+  .home:hover,
+  .home:focus-visible {
+    color: var(--text);
+    border-color: var(--border-active);
+  }
+</style>

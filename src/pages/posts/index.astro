@@ -1,0 +1,52 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Card from "../../components/Card.astro";
+
+const posts = (await getCollection("posts")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const meta = (p: (typeof posts)[number]) =>
+  [
+    p.data.date.toISOString().slice(0, 10),
+    p.data.readTime,
+    p.data.tags.slice(0, 3).map((t) => t.toUpperCase()).join(" "),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+---
+
+<BaseLayout title="Posts" description="Writeups, box walkthroughs, and build logs.">
+  <main class="container">
+    <header class="index-header">
+      <p class="label-xs kicker">INDEX / POSTS</p>
+      <h1>Posts</h1>
+    </header>
+    <ul class="card-grid" role="list">
+      {
+        posts.map((p) => (
+          <li>
+            <Card
+              href={`/posts/${p.id}`}
+              eyebrow={p.data.category}
+              title={p.data.title}
+              excerpt={p.data.description}
+              meta={meta(p)}
+            />
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+</BaseLayout>
+
+<style>
+  .index-header {
+    margin: var(--sp-7) 0 var(--sp-6);
+  }
+  .kicker {
+    color: var(--text-muted);
+    margin: 0 0 var(--sp-3);
+  }
+</style>

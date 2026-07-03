@@ -191,6 +191,28 @@ pre {
   overflow-x: auto;
 }
 
+/* Syntax theme from the palette — muted ANSI precedent (§9.5).
+   Shiki "css-variables" theme reads these on md fences and <Code> alike. */
+:root {
+  --astro-code-foreground: var(--text);
+  --astro-code-background: var(--surface);
+  --astro-code-token-comment: var(--text-disabled);
+  --astro-code-token-keyword: var(--link);
+  --astro-code-token-string: #c9a35c;
+  --astro-code-token-string-expression: #c9a35c;
+  --astro-code-token-function: var(--text);
+  --astro-code-token-constant: var(--text);
+  --astro-code-token-parameter: var(--text-muted);
+  --astro-code-token-punctuation: var(--text-muted);
+  --astro-code-token-link: var(--link);
+}
+pre.astro-code {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  padding: var(--sp-4);
+  -webkit-overflow-scrolling: touch;
+}
+
 img,
 svg,
 video {
@@ -241,6 +263,21 @@ hr {
 .measure {
   max-width: var(--measure);
   margin-inline: auto;
+}
+
+/* Card grid (§9.3): fluid columns — 1 / 2 / 3 across the §5 breakpoints */
+.card-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--sp-4);
+}
+@media (min-width: 768px) {
+  .card-grid {
+    gap: var(--sp-5);
+  }
 }
 
 /* ---------- Type roles (§4) ---------- */

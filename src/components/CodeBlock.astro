@@ -20,26 +20,9 @@ const { code, lang, filename } = Astro.props;
 </figure>
 
 <style is:global>
-  /* Syntax theme from the palette — muted ANSI precedent (§9.5) */
-  :root {
-    --astro-code-foreground: var(--text);
-    --astro-code-background: transparent;
-    --astro-code-token-comment: var(--text-disabled);
-    --astro-code-token-keyword: var(--link);
-    --astro-code-token-string: #c9a35c;
-    --astro-code-token-string-expression: #c9a35c;
-    --astro-code-token-function: var(--text);
-    --astro-code-token-constant: var(--text);
-    --astro-code-token-parameter: var(--text-muted);
-    --astro-code-token-punctuation: var(--text-muted);
-    --astro-code-token-link: var(--link);
-  }
   .code-block pre.astro-code {
     margin: 0;
-    padding: var(--sp-4);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    font: 400 var(--fs-code) / 1.6 var(--font-mono);
+    border: 0;
     border-radius: 0 0 var(--radius-m) var(--radius-m);
   }
 </style>
