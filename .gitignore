@@ -1,9 +1,9 @@
-# local reference docs
+# local reference docs (agent/AI files stay out of the repo)
 CLAUDE.md
+AGENTS.md
 design-system-v1.md
 *.md
 !README.md
-!AGENTS.md
 
 # build output
 dist/
