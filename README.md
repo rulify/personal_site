@@ -1,6 +1,6 @@
 # personal site
 
-Personal website for blog posts and internet playground experiments.
+Personal website for writeups, projects, and experiments.
 Built with [Astro](https://astro.build), static output, deployed on Vercel.
 
 ## Commands

@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Card from "../components/Card.astro";
+import { SITE } from "../consts";
 
 const posts = (await getCollection("posts")).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
@@ -15,11 +16,11 @@ const tagStr = (tags: string[]) =>
   tags.slice(0, 3).map((t) => t.toUpperCase()).join(" ");
 ---
 
-<BaseLayout title="SITE_IDENT" description="Blogs and internet playground experiments.">
-  <main class="container">
+<BaseLayout title={SITE.ident} description={SITE.description}>
+  <div class="container">
     <header class="home-header">
-      <h1>SITE_IDENT</h1>
-      <p class="value-s tagline">writeups · projects · internet playground</p>
+      <h1>{SITE.ident}</h1>
+      <p class="value-s tagline">{SITE.tagline}</p>
     </header>
 
     <section class="home-section">
@@ -65,7 +66,7 @@ const tagStr = (tags: string[]) =>
         }
       </ul>
     </section>
-  </main>
+  </div>
 </BaseLayout>
 
 <style>

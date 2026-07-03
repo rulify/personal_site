@@ -1,0 +1,103 @@
+---
+import { SITE } from "../consts";
+
+const path = Astro.url.pathname;
+const modules = [
+  { label: "POSTS", href: "/posts" },
+  { label: "PROJX", href: "/projects" },
+  { label: "ABOUT", href: "/about" },
+];
+const isActive = (href: string) => path === href || path.startsWith(href + "/");
+---
+
+<header class="site-header">
+  <nav class="container header-inner" aria-label="Primary">
+    <a class="ident label-xs" href="/">{SITE.ident}</a>
+    <ul class="modules" role="list">
+      {
+        modules.map((m) => (
+          <li>
+            <a
+              class:list={["module", "label-xs", { active: isActive(m.href) }]}
+              href={m.href}
+              aria-current={isActive(m.href) ? "page" : undefined}
+            >
+              {m.label}
+            </a>
+          </li>
+        ))
+      }
+      <li>
+        <a class="module label-xs cmd" href="#site-nav">CMD</a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    height: 44px;
+  }
+  .ident {
+    display: flex;
+    align-items: center;
+    color: var(--text);
+    text-decoration: none;
+    padding-right: var(--sp-3);
+  }
+  .modules {
+    display: flex;
+    align-items: stretch;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .modules li {
+    display: flex;
+    border-left: 1px solid var(--border);
+  }
+  .module {
+    display: flex;
+    align-items: center;
+    padding: 0 var(--sp-3);
+    color: var(--text-muted);
+    text-decoration: none;
+    transition:
+      background var(--transition),
+      color var(--transition);
+  }
+  .module:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+  .module.active {
+    background: var(--accent-deep);
+    color: var(--text);
+  }
+  .module:focus-visible {
+    outline: 2px solid var(--border-active);
+    outline-offset: -2px;
+  }
+  @media (pointer: coarse) {
+    .module {
+      min-width: 44px;
+      justify-content: center;
+    }
+  }
+  /* Mobile: ident + CMD only; the palette (later, the footer list for now) is the menu */
+  @media (max-width: 767px) {
+    .modules li:not(:last-child) {
+      display: none;
+    }
+  }
+</style>

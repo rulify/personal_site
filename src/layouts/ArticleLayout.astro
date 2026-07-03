@@ -18,7 +18,7 @@ const { title, description, category, date, stat, tags = [], prev, next } = Astr
 ---
 
 <BaseLayout title={title} description={description}>
-  <main class="container">
+  <div class="container">
     <article>
       <header class="article-header">
         <p class="label-xs eyebrow">{category}</p>
@@ -68,7 +68,7 @@ const { title, description, category, date, stat, tags = [], prev, next } = Astr
         }
       </footer>
     </article>
-  </main>
+  </div>
 </BaseLayout>
 
 <style>
