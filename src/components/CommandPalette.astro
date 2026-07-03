@@ -25,11 +25,9 @@
       />
     </div>
     <div class="palette-list" id="palette-list" role="listbox"></div>
-    <p class="palette-empty label-xs" hidden>
-      NO RESULTS <span class="jp" aria-hidden="true">該当なし</span>
-    </p>
+    <p class="palette-empty label-xs" hidden>NO RESULTS</p>
     <p class="palette-legend label-xs" aria-hidden="true">
-      ↑↓ NAV · ENTR OPEN · ESC CLOSE
+      ↑↓ NAVIGATE · ENTER OPEN · ESC CLOSE
     </p>
   </div>
 </div>
@@ -105,6 +103,14 @@
   #palette-input::placeholder {
     color: var(--text-disabled);
   }
+  /* Mobile browsers auto-zoom focused inputs under 16px, which pushes the
+     panel off-screen; hold the input at 16px below the md breakpoint. */
+  @media (max-width: 767px) {
+    #palette-input,
+    .palette-prompt {
+      font-size: 16px;
+    }
+  }
 
   .palette-list {
     max-height: min(50vh, 400px);
@@ -146,8 +152,9 @@
     background: var(--selection);
   }
 
+  /* empty result set is a genuine status → warn token (§3) */
   .palette-empty {
-    color: var(--text-muted);
+    color: var(--warn);
     text-align: center;
     padding: var(--sp-5) 0;
     margin: 0;

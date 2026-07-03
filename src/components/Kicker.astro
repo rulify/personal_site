@@ -1,12 +1,11 @@
 ---
 interface Props {
   label: string;
-  jp?: string;
   moreHref?: string;
   moreLabel?: string;
 }
 
-const { label, jp, moreHref, moreLabel } = Astro.props;
+const { label, moreHref, moreLabel } = Astro.props;
 ---
 
 <div class="kicker-row">
@@ -15,7 +14,6 @@ const { label, jp, moreHref, moreLabel } = Astro.props;
     {label}
   </p>
   <span class="kicker-rule decal-md" aria-hidden="true"></span>
-  {jp && <span class="jp decal-md" aria-hidden="true">{jp}</span>}
   {
     moreHref && (
       <a class="label-xs kicker-more" href={moreHref}>

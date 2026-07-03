@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from "astro:content";
 import ArticleLayout from "../../layouts/ArticleLayout.astro";
+import { STATUS_TONE } from "../../consts";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
@@ -18,9 +19,10 @@ const d = project.data;
 <ArticleLayout
   title={d.title}
   description={d.description}
-  category="PROJX"
+  category="PROJECT"
   date={d.date.toISOString().slice(0, 10)}
   stat={d.status}
+  statTone={STATUS_TONE[d.status]}
   tags={d.tags}
 >
   <Content />

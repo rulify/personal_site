@@ -16,7 +16,7 @@ export const GET: APIRoute = async () => {
     ...projects.map((p) => ({
       title: p.data.title,
       url: `/projects/${p.id}`,
-      category: "PROJX",
+      category: "PROJECT",
       tags: p.data.tags,
     })),
   ];

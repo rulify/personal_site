@@ -1,20 +1,16 @@
 ---
-import { SITE, JP } from "../consts";
+import { SITE } from "../consts";
 ---
 
 <footer class="site-footer">
   <div class="hazard-strip" aria-hidden="true"></div>
   <div class="container footer-inner">
-    <p class="value-s ident">
-      {SITE.ident} © {SITE.year}
-      <span class="label-xs eof" aria-hidden="true">// EOF</span>
-      <span class="jp decal-md" aria-hidden="true">{JP.eof}</span>
-    </p>
+    <p class="value-s ident">{SITE.ident} © {SITE.year}</p>
     <nav id="site-nav" aria-label="Footer">
       <ul class="footer-nav" role="list">
         <li><a class="label-xs" href="/">HOME</a></li>
         <li><a class="label-xs" href="/posts">POSTS</a></li>
-        <li><a class="label-xs" href="/projects">PROJX</a></li>
+        <li><a class="label-xs" href="/projects">PROJECTS</a></li>
         <li><a class="label-xs" href="/about">ABOUT</a></li>
       </ul>
     </nav>
@@ -26,14 +22,6 @@ import { SITE, JP } from "../consts";
   .site-footer {
     border-top: 1px solid var(--border);
     margin-top: var(--sp-8);
-  }
-  .ident {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-3);
-  }
-  .eof {
-    color: var(--text-disabled);
   }
   .footer-inner {
     display: flex;

@@ -5,10 +5,14 @@ interface Props {
   title: string;
   excerpt: string;
   meta: string;
+  /* genuine status readout — the only hazard colour a card may carry (§3) */
+  status?: string;
+  statusTone?: "ok" | "warn" | "error";
   index?: number;
 }
 
-const { href, eyebrow, title, excerpt, meta, index } = Astro.props;
+const { href, eyebrow, title, excerpt, meta, status, statusTone, index } =
+  Astro.props;
 ---
 
 <article class="card">
@@ -22,7 +26,16 @@ const { href, eyebrow, title, excerpt, meta, index } = Astro.props;
   <p class="label-xs card-eyebrow">{eyebrow}</p>
   <h2 class="card-title"><a href={href}>{title}</a></h2>
   <p class="card-excerpt">{excerpt}</p>
-  <p class="card-meta value-s">{meta}</p>
+  <p class="card-meta value-s">
+    {
+      status && (
+        <span class:list={["card-status", statusTone]}>
+          <span aria-hidden="true">●</span> {status} ·
+        </span>
+      )
+    }
+    {meta}
+  </p>
 </article>
 
 <style>
@@ -105,5 +118,14 @@ const { href, eyebrow, title, excerpt, meta, index } = Astro.props;
   .card-meta {
     color: var(--text-muted);
     margin: 0;
+  }
+  .card-status.ok {
+    color: var(--ok-text);
+  }
+  .card-status.warn {
+    color: var(--warn);
+  }
+  .card-status.error {
+    color: var(--error-text);
   }
 </style>

@@ -3,7 +3,7 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Card from "../components/Card.astro";
 import Kicker from "../components/Kicker.astro";
-import { SITE, JP } from "../consts";
+import { SITE, STATUS_TONE } from "../consts";
 
 const posts = (await getCollection("posts")).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
@@ -15,22 +15,14 @@ const projects = (await getCollection("projects")).sort(
 const fmt = (d: Date) => d.toISOString().slice(0, 10);
 const tagStr = (tags: string[]) =>
   tags.slice(0, 3).map((t) => t.toUpperCase()).join(" ");
-
-const [identBase, identUnit] = SITE.ident.split("-");
 ---
 
 <BaseLayout title={SITE.ident} description={SITE.description}>
   <div class="container">
     <header class="hero">
       <div class="hero-main">
-        <p class="jp hero-jp" aria-hidden="true">{JP.unit}</p>
-        <h1 class="display-mono hero-title">
-          {identBase}-<span class="unit-plate">{identUnit}</span>
-        </h1>
-        <p class="value-s hero-tagline">
-          {SITE.tagline}
-          <span class="jp decal-md" aria-hidden="true"> ／ {JP.tagline}</span>
-        </p>
+        <h1 class="display-mono hero-title">{SITE.ident}</h1>
+        <p class="value-s hero-tagline">{SITE.tagline}</p>
         <p class="serial hero-serial">
           {SITE.serial}
           <span class="barcode decal-md" aria-hidden="true"></span>
@@ -45,7 +37,7 @@ const [identBase, identUnit] = SITE.ident.split("-");
     </header>
 
     <section class="home-section">
-      <Kicker label="RECENT / POSTS" jp={JP.posts} moreHref="/posts" moreLabel="ALL POSTS" />
+      <Kicker label="RECENT / POSTS" moreHref="/posts" moreLabel="ALL POSTS" />
       <ul class="card-grid" role="list">
         {
           posts.slice(0, 3).map((p, i) => (
@@ -65,17 +57,19 @@ const [identBase, identUnit] = SITE.ident.split("-");
     </section>
 
     <section class="home-section">
-      <Kicker label="RECENT / PROJX" jp={JP.projects} moreHref="/projects" moreLabel="ALL PROJECTS" />
+      <Kicker label="RECENT / PROJECTS" moreHref="/projects" moreLabel="ALL PROJECTS" />
       <ul class="card-grid" role="list">
         {
           projects.slice(0, 3).map((p, i) => (
             <li>
               <Card
                 href={`/projects/${p.id}`}
-                eyebrow="PROJX"
+                eyebrow="PROJECT"
                 title={p.data.title}
                 excerpt={p.data.description}
-                meta={`${fmt(p.data.date)} · ${p.data.status} · ${tagStr(p.data.tags)}`}
+                meta={`${fmt(p.data.date)} · ${tagStr(p.data.tags)}`}
+                status={p.data.status}
+                statusTone={STATUS_TONE[p.data.status]}
                 index={i + 1}
               />
             </li>
@@ -114,9 +108,6 @@ const [identBase, identUnit] = SITE.ident.split("-");
     right: 0;
   }
 
-  .hero-jp {
-    margin: 0 0 var(--sp-3);
-  }
   .hero-title {
     margin: 0 0 var(--sp-3);
   }

@@ -9,12 +9,24 @@ interface Props {
   date: string;
   /* read time for posts, status for projects (§8) */
   stat: string;
+  /* set only when stat is a genuine status — colours it with a hazard token (§3) */
+  statTone?: "ok" | "warn" | "error";
   tags?: string[];
   prev?: { title: string; href: string };
   next?: { title: string; href: string };
 }
 
-const { title, description, category, date, stat, tags = [], prev, next } = Astro.props;
+const {
+  title,
+  description,
+  category,
+  date,
+  stat,
+  statTone,
+  tags = [],
+  prev,
+  next,
+} = Astro.props;
 ---
 
 <BaseLayout title={title} description={description}>
@@ -24,7 +36,9 @@ const { title, description, category, date, stat, tags = [], prev, next } = Astr
         <p class="label-xs eyebrow">{category}</p>
         <h1>{title}</h1>
         <div class="article-meta value-s">
-          {date} · {stat} · {tags.map((t) => t.toUpperCase()).join(" ")}
+          {date} · <span class:list={["stat", statTone]}>{stat}</span> · {
+            tags.map((t) => t.toUpperCase()).join(" ")
+          }
         </div>
       </header>
 
@@ -86,6 +100,15 @@ const { title, description, category, date, stat, tags = [], prev, next } = Astr
   .article-meta {
     font-family: var(--font-mono);
     color: var(--text-muted);
+  }
+  .stat.ok {
+    color: var(--ok-text);
+  }
+  .stat.warn {
+    color: var(--warn);
+  }
+  .stat.error {
+    color: var(--error-text);
   }
 
   /* Motif slot 1: corner ticks on the meta strip, dropped below 768px (§6, §9.4) */

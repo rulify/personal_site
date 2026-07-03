@@ -2,7 +2,6 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Card from "../../components/Card.astro";
-import { JP } from "../../consts";
 
 const posts = (await getCollection("posts")).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
@@ -24,9 +23,7 @@ const meta = (p: (typeof posts)[number]) =>
       <p class="label-xs kicker">
         <span class="chevrons" aria-hidden="true">›››</span> INDEX / POSTS
       </p>
-      <h1 class="display-mono">
-        POSTS <span class="jp decal-md" aria-hidden="true">{JP.posts}</span>
-      </h1>
+      <h1 class="display-mono">POSTS</h1>
     </header>
     <ul class="card-grid" role="list">
       {
@@ -58,10 +55,5 @@ const meta = (p: (typeof posts)[number]) =>
   .chevrons {
     color: var(--link);
     letter-spacing: 0.1em;
-  }
-  .index-header .jp {
-    font-size: 0.4em;
-    vertical-align: 0.5em;
-    letter-spacing: 0.3em;
   }
 </style>

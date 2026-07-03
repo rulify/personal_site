@@ -21,7 +21,8 @@ const projects = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    status: z.string(),
+    /* fixed vocabulary so the status→hazard-token mapping stays total */
+    status: z.enum(["ACTIVE", "WIP", "DONE", "ARCHIVED"]),
     date: z.coerce.date(),
     tags: z.array(z.string()).default([]),
   }),

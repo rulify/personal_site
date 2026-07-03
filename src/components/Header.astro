@@ -4,7 +4,7 @@ import { SITE } from "../consts";
 const path = Astro.url.pathname;
 const modules = [
   { label: "POSTS", href: "/posts" },
-  { label: "PROJX", href: "/projects" },
+  { label: "PROJECTS", href: "/projects" },
   { label: "ABOUT", href: "/about" },
 ];
 const isActive = (href: string) => path === href || path.startsWith(href + "/");
@@ -32,7 +32,8 @@ const isActive = (href: string) => path === href || path.startsWith(href + "/");
       }
       <li>
         <a class="module label-xs cmd" href="#site-nav" data-palette-trigger>
-          CMD <span class="cmd-hint" data-key-hint aria-hidden="true"></span>
+          <span class="cmd-desktop">CMD <span class="cmd-hint" data-key-hint aria-hidden="true"></span></span>
+          <span class="cmd-mobile">MENU</span>
         </a>
       </li>
     </ul>
@@ -114,13 +115,19 @@ const isActive = (href: string) => path === href || path.startsWith(href + "/");
   .cmd-hint:empty {
     display: none;
   }
-  /* Mobile: ident + CMD only; the palette is the menu */
+  /* Mobile: ident + trigger only; the palette is the menu, so it reads MENU */
+  .cmd-mobile {
+    display: none;
+  }
   @media (max-width: 767px) {
     .modules li:not(:last-child) {
       display: none;
     }
-    .cmd-hint {
+    .cmd-desktop {
       display: none;
+    }
+    .cmd-mobile {
+      display: inline;
     }
   }
 </style>

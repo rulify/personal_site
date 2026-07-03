@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Card from "../../components/Card.astro";
-import { JP } from "../../consts";
+import { STATUS_TONE } from "../../consts";
 
 const projects = (await getCollection("projects")).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
@@ -11,7 +11,6 @@ const projects = (await getCollection("projects")).sort(
 const meta = (p: (typeof projects)[number]) =>
   [
     p.data.date.toISOString().slice(0, 10),
-    p.data.status,
     p.data.tags.slice(0, 3).map((t) => t.toUpperCase()).join(" "),
   ]
     .filter(Boolean)
@@ -22,11 +21,9 @@ const meta = (p: (typeof projects)[number]) =>
   <div class="container">
     <header class="index-header">
       <p class="label-xs kicker">
-        <span class="chevrons" aria-hidden="true">›››</span> INDEX / PROJX
+        <span class="chevrons" aria-hidden="true">›››</span> INDEX / PROJECTS
       </p>
-      <h1 class="display-mono">
-        PROJX <span class="jp decal-md" aria-hidden="true">{JP.projects}</span>
-      </h1>
+      <h1 class="display-mono">PROJECTS</h1>
     </header>
     <ul class="card-grid" role="list">
       {
@@ -34,10 +31,12 @@ const meta = (p: (typeof projects)[number]) =>
           <li>
             <Card
               href={`/projects/${p.id}`}
-              eyebrow="PROJX"
+              eyebrow="PROJECT"
               title={p.data.title}
               excerpt={p.data.description}
               meta={meta(p)}
+              status={p.data.status}
+              statusTone={STATUS_TONE[p.data.status]}
               index={i + 1}
             />
           </li>
@@ -58,10 +57,5 @@ const meta = (p: (typeof projects)[number]) =>
   .chevrons {
     color: var(--link);
     letter-spacing: 0.1em;
-  }
-  .index-header .jp {
-    font-size: 0.4em;
-    vertical-align: 0.5em;
-    letter-spacing: 0.3em;
   }
 </style>

@@ -94,9 +94,6 @@
   /* §4 Typography */
   --font-sans: "IBM Plex Sans", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
-  /* decorative CJK annotations ride on system fonts — never running prose */
-  --font-jp: "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", "Noto Sans JP",
-    "Yu Gothic", "Meiryo", sans-serif;
 
   --fs-label-xs: 0.75rem;
   --fs-value-s: 0.8125rem;
@@ -325,14 +322,6 @@ hr {
 
 /* ---------- Decal kit (mecha plate language, drawn not imaged) ---------- */
 
-/* decorative CJK annotation — always aria-hidden in markup */
-.jp {
-  font-family: var(--font-jp);
-  font-size: var(--fs-label-xs);
-  letter-spacing: 0.2em;
-  color: var(--text-muted);
-}
-
 .serial {
   font: 400 var(--fs-label-xs) / 1 var(--font-mono);
   letter-spacing: 0.1em;
@@ -349,14 +338,6 @@ hr {
     transparent 6px 14px
   );
 }
-.hazard-strip.accent {
-  background: repeating-linear-gradient(
-    -45deg,
-    var(--accent) 0 6px,
-    transparent 6px 14px
-  );
-}
-
 /* pseudo-random barcode block via layered line gradients */
 .barcode {
   width: 96px;
@@ -367,15 +348,6 @@ hr {
     repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 13px);
   color: var(--text-muted);
   opacity: 0.7;
-}
-
-/* inverted unit plate — the boxed "01" from the decal sheets */
-.unit-plate {
-  display: inline-block;
-  font: 700 inherit;
-  background: var(--accent);
-  color: var(--text);
-  padding: 0 0.18em;
 }
 
 /* most decals drop below 768px; structural brackets stay (§6 spirit) */

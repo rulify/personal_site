@@ -6,14 +6,10 @@ interface Props {
 const { kind = "note" } = Astro.props;
 
 const labels = { note: "NOTE", ok: "OK", warn: "WARN", fail: "FAIL" };
-const jp = { note: "備考", ok: "良好", warn: "注意", fail: "危険" };
 ---
 
 <div class={`callout callout-${kind}`}>
-  <p class="label-xs callout-label">
-    {labels[kind]}
-    <span class="callout-jp" aria-hidden="true">{jp[kind]}</span>
-  </p>
+  <p class="label-xs callout-label">{labels[kind]}</p>
   <div class="callout-body"><slot /></div>
 </div>
 
@@ -28,12 +24,6 @@ const jp = { note: "備考", ok: "良好", warn: "注意", fail: "危険" };
   .callout-label {
     color: var(--text-muted);
     margin: 0 0 var(--sp-2);
-  }
-  .callout-jp {
-    font-family: var(--font-jp);
-    letter-spacing: 0.2em;
-    opacity: 0.75;
-    margin-left: var(--sp-2);
   }
   .callout-body {
     font: 400 var(--fs-body-s) / 1.55 var(--font-sans);
