@@ -1,9 +1,17 @@
 // Site identity — change the wordmark here and it propagates everywhere.
+// RLFY-01 is the unit alias for chrome/decals only.
 export const SITE = {
   ident: "RLFY-01",
-  description: "Writeups, projects, and experiments.",
-  tagline: "writeups · projects · experiments",
+  name: "Jacob",
+  fullName: "Jacob Thomas",
+  headline: "Cybersecurity Student",
+  subtitle: "Cybersecurity student at Oxford Brookes",
+  roles: ["WRITEUPS", "PROJECTS", "EXPERIMENTS"],
+  description:
+    "Cybersecurity student at Oxford Brookes — writeups, projects, and experiments.",
   repo: "https://github.com/rulify/personal_site",
+  email: "jacobthomas55555@gmail.com",
+  linkedin: "https://www.linkedin.com/in/jacob-thomas-cyber/",
   year: 2026,
   serial: "SER 7599-2607 // MODEL 26-07C",
 };

@@ -116,6 +116,7 @@
 
   --site-max: 1120px; /* outer cap for chrome and card grids */
   --measure: 66ch;    /* hard cap on prose width */
+  --grid-cell: 48px;  /* blueprint grid pitch — body bg and hero glow share it */
 
   /* §11 Transitions: hover/focus colour and border changes only */
   --transition: 140ms ease-out;
@@ -143,7 +144,7 @@ body {
   background-image:
     linear-gradient(rgba(53, 64, 76, 0.16) 1px, transparent 1px),
     linear-gradient(90deg, rgba(53, 64, 76, 0.16) 1px, transparent 1px);
-  background-size: 48px 48px;
+  background-size: var(--grid-cell) var(--grid-cell);
   color: var(--text);
   font: 400 var(--fs-body-s) / 1.55 var(--font-sans);
 }

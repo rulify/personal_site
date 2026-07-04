@@ -1,5 +1,11 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Kicker from "../components/Kicker.astro";
+import { SITE } from "../consts";
+
+const linkedinLabel = SITE.linkedin
+  .replace(/^https:\/\/www\./, "")
+  .replace(/\/$/, "");
 ---
 
 <BaseLayout title="About" description="About this site and its operator.">
@@ -23,6 +29,20 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           nisi ut aliquip ex ea commodo consequat.
         </p>
       </div>
+
+      <section id="contact" class="contact" aria-label="Contact">
+        <Kicker label="CONTACT" />
+        <dl class="contact-list">
+          <div class="contact-row">
+            <dt class="label-xs">EMAIL</dt>
+            <dd><a class="value-s" href={`mailto:${SITE.email}`}>{SITE.email}</a></dd>
+          </div>
+          <div class="contact-row">
+            <dt class="label-xs">LINKEDIN</dt>
+            <dd><a class="value-s" href={SITE.linkedin}>{linkedinLabel}</a></dd>
+          </div>
+        </dl>
+      </section>
     </article>
   </div>
 </BaseLayout>
@@ -48,5 +68,32 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   }
   .title-rule {
     flex: 1;
+  }
+  .contact {
+    margin-top: var(--sp-7);
+  }
+  .contact-list {
+    margin: 0;
+  }
+  .contact-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-4);
+    padding: var(--sp-3) 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .contact-row dt {
+    color: var(--text-muted);
+    min-width: 96px;
+  }
+  .contact-row dd {
+    margin: 0;
+  }
+  @media (pointer: coarse) {
+    .contact-row a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
   }
 </style>

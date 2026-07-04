@@ -1,5 +1,6 @@
 ---
 import { SITE } from "../consts";
+import SiteSearch from "./SiteSearch.astro";
 
 const path = Astro.url.pathname;
 const modules = [
@@ -30,11 +31,8 @@ const isActive = (href: string) => path === href || path.startsWith(href + "/");
           </li>
         ))
       }
-      <li>
-        <a class="module label-xs cmd" href="#site-nav" data-palette-trigger>
-          <span class="cmd-desktop">CMD <span class="cmd-hint" data-key-hint aria-hidden="true"></span></span>
-          <span class="cmd-mobile">MENU</span>
-        </a>
+      <li class="search-slot">
+        <SiteSearch />
       </li>
     </ul>
   </nav>
@@ -107,27 +105,16 @@ const isActive = (href: string) => path === href || path.startsWith(href + "/");
       justify-content: center;
     }
   }
-  /* §9.1: palette hint in muted mono, desktop only; set by the palette script */
-  .cmd-hint {
-    color: var(--text-muted);
-    margin-left: var(--sp-2);
+  /* Search sits as its own control, not a nav module */
+  .modules li.search-slot {
+    border-left: 0;
+    align-items: center;
+    padding-left: var(--sp-4);
   }
-  .cmd-hint:empty {
-    display: none;
-  }
-  /* Mobile: ident + trigger only; the palette is the menu, so it reads MENU */
-  .cmd-mobile {
-    display: none;
-  }
+  /* Mobile: nav modules stay; the inline search is a desktop affordance */
   @media (max-width: 767px) {
-    .modules li:not(:last-child) {
+    .modules li.search-slot {
       display: none;
-    }
-    .cmd-desktop {
-      display: none;
-    }
-    .cmd-mobile {
-      display: inline;
     }
   }
 </style>

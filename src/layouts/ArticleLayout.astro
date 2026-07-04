@@ -29,7 +29,12 @@ const {
 } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout
+  title={title}
+  description={description}
+  ogType="article"
+  publishedTime={date}
+>
   <div class="container">
     <article>
       <header class="article-header">

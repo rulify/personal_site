@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 
-// Build-time palette index (§12): fetched on first palette open, not page load.
+// Build-time search index: fetched when the header search first opens.
 export const GET: APIRoute = async () => {
   const posts = await getCollection("posts");
   const projects = await getCollection("projects");

@@ -1,0 +1,251 @@
+---
+// Inline site search — a plain, always-visible search field in the header.
+// Click (or tab) to focus; suggestions drop down beneath it. No overlay,
+// no focus trap, no shortcuts: it works like any ordinary search box.
+---
+
+{/* geometry inlined: scoped styles land after first paint on the dev
+    server, and the box must not jump into place when they do */}
+<div class="site-search" data-search-root style="height:30px;align-self:center">
+  <span class="search-prompt label-xs" aria-hidden="true">&gt;</span>
+  <input
+    style="border:0;background:transparent;outline:0"
+    id="site-search-input"
+    type="text"
+    role="combobox"
+    aria-expanded="false"
+    aria-controls="search-list"
+    aria-autocomplete="list"
+    aria-label="Search site"
+    autocomplete="off"
+    spellcheck="false"
+    placeholder="SEARCH"
+  />
+  <div class="search-panel" hidden>
+    <div class="search-list" id="search-list" role="listbox"></div>
+    <p class="search-empty label-xs" hidden>NO RESULTS</p>
+  </div>
+</div>
+
+<style>
+  /* a visible input well — the corner should read as a control, not a gap */
+  .site-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    width: 220px;
+    height: 30px;
+    padding: 0 var(--sp-3);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-s);
+    transition: border-color var(--transition);
+  }
+  .site-search:hover,
+  .site-search:focus-within {
+    border-color: var(--border-active);
+  }
+  .search-prompt {
+    color: var(--text-muted);
+  }
+  #site-search-input {
+    flex: 1;
+    min-width: 0;
+    background: none;
+    border: 0;
+    outline: 0;
+    font: 500 var(--fs-label-xs) / 1 var(--font-mono);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  #site-search-input::placeholder {
+    color: var(--text-disabled);
+  }
+
+  .search-panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    width: 320px;
+    max-height: min(50vh, 400px);
+    overflow-y: auto;
+    background: var(--surface);
+    border: 1px solid var(--border-active);
+    border-radius: var(--radius-s);
+    z-index: 15;
+  }
+  .search-list :global(.search-option) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    height: 36px;
+    padding: 0 var(--sp-3);
+    cursor: pointer;
+  }
+  .search-list :global(.search-option .title) {
+    font: 400 var(--fs-body-s) / 1.55 var(--font-sans);
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .search-list :global(.search-option .hint) {
+    font: 400 var(--fs-value-s) / 1.5 var(--font-mono);
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .search-list :global(.search-option[aria-selected="true"]) {
+    background: var(--selection);
+  }
+  .search-empty {
+    color: var(--warn);
+    text-align: center;
+    padding: var(--sp-4) 0;
+    margin: 0;
+  }
+</style>
+
+<script>
+  type IndexItem = {
+    title: string;
+    url: string;
+    category: string;
+    tags: string[];
+  };
+
+  const root = document.querySelector<HTMLElement>("[data-search-root]");
+
+  if (root) {
+    const input = root.querySelector<HTMLInputElement>("#site-search-input")!;
+    const panel = root.querySelector<HTMLElement>(".search-panel")!;
+    const list = root.querySelector<HTMLElement>(".search-list")!;
+    const empty = root.querySelector<HTMLElement>(".search-empty")!;
+
+    let pages: IndexItem[] | null = null;
+    let visible: IndexItem[] = [];
+    let selected = 0;
+
+    function fuzzy(query: string, text: string): boolean {
+      const q = query.toLowerCase();
+      const t = text.toLowerCase();
+      let qi = 0;
+      for (let i = 0; i < t.length && qi < q.length; i++) {
+        if (t[i] === q[qi]) qi++;
+      }
+      return qi === q.length;
+    }
+
+    function matches(item: IndexItem, q: string): boolean {
+      return (
+        q === "" ||
+        fuzzy(q, item.title) ||
+        item.tags.some((t) => fuzzy(q, t)) ||
+        fuzzy(q, item.category)
+      );
+    }
+
+    function render() {
+      // content search only — chrome nav already covers the section pages
+      const q = input.value.trim();
+      visible = (pages ?? []).filter((p) => matches(p, q));
+      if (selected >= visible.length) selected = Math.max(0, visible.length - 1);
+
+      list.innerHTML = visible
+        .map(
+          (item, idx) => `<div class="search-option" role="option" id="search-opt-${idx}"
+            aria-selected="${idx === selected}" data-idx="${idx}" data-url="${item.url}">
+            <span class="title"></span><span class="hint">${item.category}</span>
+          </div>`,
+        )
+        .join("");
+      // titles set via textContent to avoid HTML injection from frontmatter
+      list.querySelectorAll<HTMLElement>(".search-option").forEach((el, i) => {
+        el.querySelector(".title")!.textContent = visible[i].title;
+      });
+
+      // no verdict until the index has actually loaded
+      empty.hidden = visible.length > 0 || pages === null;
+      input.setAttribute(
+        "aria-activedescendant",
+        visible.length ? `search-opt-${selected}` : "",
+      );
+    }
+
+    function select(idx: number) {
+      selected = Math.max(0, Math.min(idx, visible.length - 1));
+      list.querySelectorAll<HTMLElement>(".search-option").forEach((el, i) => {
+        el.setAttribute("aria-selected", String(i === selected));
+      });
+      input.setAttribute("aria-activedescendant", `search-opt-${selected}`);
+      document
+        .getElementById(`search-opt-${selected}`)
+        ?.scrollIntoView({ block: "nearest" });
+    }
+
+    async function loadIndex() {
+      if (pages !== null) return;
+      try {
+        const res = await fetch("/search-index.json");
+        pages = (await res.json()) as IndexItem[];
+      } catch {
+        pages = [];
+      }
+      render();
+    }
+
+    function openPanel() {
+      panel.hidden = false;
+      input.setAttribute("aria-expanded", "true");
+      render();
+      loadIndex();
+    }
+
+    function closePanel() {
+      panel.hidden = true;
+      input.setAttribute("aria-expanded", "false");
+    }
+
+    input.addEventListener("focus", openPanel);
+    input.addEventListener("blur", closePanel);
+    input.addEventListener("input", () => {
+      selected = 0;
+      render();
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        input.value = "";
+        input.blur();
+        closePanel();
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        select(selected + 1);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        select(selected - 1);
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        const item = visible[selected];
+        if (item) window.location.href = item.url;
+      }
+    });
+
+    // keep focus in the input while clicking options, navigate on click
+    panel.addEventListener("mousedown", (e) => e.preventDefault());
+    list.addEventListener("click", (e) => {
+      const opt = (e.target as HTMLElement).closest<HTMLElement>(".search-option");
+      if (opt?.dataset.url) window.location.href = opt.dataset.url;
+    });
+    list.addEventListener("mousemove", (e) => {
+      const opt = (e.target as HTMLElement).closest<HTMLElement>(".search-option");
+      if (opt) {
+        const idx = Number(opt.dataset.idx);
+        if (idx !== selected) select(idx);
+      }
+    });
+  }
+</script>

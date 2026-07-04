@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Card from "../components/Card.astro";
+import HeroGridGlow from "../components/HeroGridGlow.astro";
 import Kicker from "../components/Kicker.astro";
 import { SITE, STATUS_TONE } from "../consts";
 
@@ -17,12 +18,19 @@ const tagStr = (tags: string[]) =>
   tags.slice(0, 3).map((t) => t.toUpperCase()).join(" ");
 ---
 
-<BaseLayout title={SITE.ident} description={SITE.description}>
+<BaseLayout home description={SITE.description}>
   <div class="container">
     <header class="hero">
+      <HeroGridGlow />
       <div class="hero-main">
-        <h1 class="display-mono hero-title">{SITE.ident}</h1>
-        <p class="value-s hero-tagline">{SITE.tagline}</p>
+        <p class="label-xs hero-hello">
+          <span class="hello-chevrons" aria-hidden="true">›››</span> HI, I'M
+        </p>
+        <h1 class="display-mono hero-title">{SITE.name.toUpperCase()}</h1>
+        <p class="hero-subtitle">{SITE.subtitle}</p>
+        <ul class="hero-roles" role="list">
+          {SITE.roles.map((r) => <li class="hero-role">{r}</li>)}
+        </ul>
         <p class="serial hero-serial">
           {SITE.serial}
           <span class="barcode decal-md" aria-hidden="true"></span>
@@ -95,12 +103,19 @@ const tagStr = (tags: string[]) =>
     margin-bottom: var(--sp-7);
     border-bottom: 1px solid var(--border);
   }
+  /* hero content rides above the glow canvas */
+  .hero-main,
+  .hero-side {
+    position: relative;
+    z-index: 1;
+  }
   /* crosshair registration marks, top corners */
   .hero::before,
   .hero::after {
     content: "+";
     position: absolute;
     top: var(--sp-4);
+    z-index: 1;
     font: 400 var(--fs-value-s) / 1 var(--font-mono);
     color: var(--text-disabled);
   }
@@ -111,13 +126,41 @@ const tagStr = (tags: string[]) =>
     right: 0;
   }
 
-  .hero-title {
-    margin: 0 0 var(--sp-3);
-  }
-  .hero-tagline {
-    font-family: var(--font-mono);
+  .hero-hello {
     color: var(--text-muted);
     margin: 0 0 var(--sp-3);
+  }
+  .hello-chevrons {
+    color: var(--link);
+    letter-spacing: 0.1em;
+  }
+  /* a notch under the full display size — the descriptor carries the intro */
+  .hero-title {
+    font-size: clamp(2rem, 1.3rem + 3.2vw, 3rem);
+    margin: 0 0 var(--sp-3);
+  }
+  .hero-subtitle {
+    font: 400 var(--fs-body-m) / 1.5 var(--font-sans);
+    color: var(--text);
+    margin: 0 0 var(--sp-4);
+  }
+  /* the operator's trades, promoted from subtext to labelled plates */
+  .hero-roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    list-style: none;
+    margin: 0 0 var(--sp-4);
+    padding: 0;
+  }
+  .hero-role {
+    font: 500 var(--fs-value-s) / 1 var(--font-mono);
+    letter-spacing: var(--track-label);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
+    background: var(--surface);
+    padding: var(--sp-2) var(--sp-3);
   }
   .hero-serial {
     display: flex;
@@ -131,6 +174,12 @@ const tagStr = (tags: string[]) =>
     flex-direction: column;
     align-items: flex-end;
     gap: var(--sp-3);
+  }
+  /* scoped display:flex outranks the global .decal-md hide — repeat it */
+  @media (max-width: 767px) {
+    .hero-side {
+      display: none;
+    }
   }
   .spec-readout {
     font-family: var(--font-mono);
