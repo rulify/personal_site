@@ -148,14 +148,15 @@ const tagStr = (tags: string[]) =>
       addEventListener("pointerdown", onSkip, true);
       addEventListener("touchstart", onSkip, true);
 
-      // header in at 120ms, lines whole per 140ms tick, hold, fade — ≈2.2s
+      // header in at 120ms, lines whole per 170ms tick, long hold so the
+      // copy can actually be read, fade — ≈3.1s total, still skippable
       at(0, () => ident.classList.add("in"));
       let t = 120;
       for (const el of lineEls) {
-        t += 140;
+        t += 170;
         at(t, () => el.classList.add("in"));
       }
-      at(t + 300, () => exit(false));
+      at(t + 900, () => exit(false));
     })();
   </script>
   <div class="container">
