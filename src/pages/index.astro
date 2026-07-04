@@ -19,6 +19,145 @@ const tagStr = (tags: string[]) =>
 ---
 
 <BaseLayout home description={SITE.description}>
+  {/* §10 boot sequence — inline and early so the overlay is up before the
+      homepage paints; content renders underneath regardless. */}
+  <script is:inline>
+    (() => {
+      let seen;
+      try {
+        seen = localStorage.getItem("boot_seen");
+      } catch {
+        return;
+      }
+      if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches)
+        return;
+      // written at animation start: a skip or mid-boot refresh still counts
+      try {
+        localStorage.setItem("boot_seen", "1");
+      } catch {}
+
+      const style = document.createElement("style");
+      style.textContent =
+        "#boot{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;transition:opacity 250ms ease-out}" +
+        "#boot.out{opacity:0}" +
+        "#boot.fast{transition-duration:150ms}" +
+        "#boot .blk{max-width:480px;font:400 13px/1.7 var(--font-mono);color:var(--text)}" +
+        "#boot pre{margin:0 0 1.7em;font:inherit;color:var(--text);opacity:0;transition:opacity 120ms ease-out}" +
+        "#boot pre.in{opacity:1}" +
+        "#boot .bl{visibility:hidden;white-space:pre;min-height:1.7em}" +
+        "#boot .bl.in{visibility:visible}" +
+        "#boot .bm{color:var(--text-muted)}" +
+        "#boot .bok{color:var(--ok-text)}" +
+        "#boot .cur{display:inline-block;width:.55em;height:1em;margin-left:1px;vertical-align:-2px;background:var(--text);animation:bblink 800ms steps(1) infinite}" +
+        "@keyframes bblink{50%{opacity:0}}" +
+        "#boot .bskip{position:absolute;bottom:24px;left:0;right:0;text-align:center;font:500 var(--fs-label-xs)/1 var(--font-mono);letter-spacing:var(--track-label);color:var(--text-disabled)}";
+
+      const CHECKS = [
+        ["CORE PWR", " OK "],
+        ["NEURAL LINK", " OK "],
+        ["THRM REGULATION", " OK "],
+        ["SERVO CALIBRATION", " OK "],
+        ["GYRO STABILISATION", " OK "],
+        ["AUX SENSOR ARRAY", " OK "],
+        ["PILOT VITALS", " OK "],
+        ["INTRUSION CM", "ARMD"],
+        ["WEAPONS SYS", "SAFE"],
+      ];
+
+      const overlay = document.createElement("div");
+      overlay.id = "boot";
+      overlay.setAttribute("aria-hidden", "true");
+      const blk = document.createElement("div");
+      blk.className = "blk";
+
+      const ident = document.createElement("pre");
+      ident.textContent =
+        "  ___ _    _____   __    __  _ \n" +
+        " | _ \\ |  | __\\ \\ / /__ /  \\/ |\n" +
+        " |   / |__| _| \\ V /___| () | |\n" +
+        " |_|_\\____|_|   |_|     \\__/|_|";
+      blk.appendChild(ident);
+
+      const lineEls = [];
+      const addLine = (build) => {
+        const el = document.createElement("div");
+        el.className = "bl";
+        if (build) {
+          build(el);
+          lineEls.push(el);
+        }
+        blk.appendChild(el);
+        return el;
+      };
+
+      for (const [label, res] of CHECKS) {
+        addLine((el) => {
+          const left = document.createElement("span");
+          left.className = "bm";
+          left.textContent = label + " " + ".".repeat(24 - label.length) + " ";
+          const right = document.createElement("span");
+          // safed weapons are not a success state — the joke reads flat
+          right.className = res === "SAFE" ? "bm" : "bok";
+          right.textContent = "[" + res + "]";
+          el.append(left, right);
+        });
+      }
+      addLine(null); // spacer row, permanent blank
+      addLine((el) => (el.textContent = "ALL SYSTEMS NOMINAL"));
+      addLine((el) => {
+        el.textContent = "SYSTEM READY";
+        const cur = document.createElement("span");
+        cur.className = "cur";
+        el.appendChild(cur);
+      });
+
+      const skipHint = document.createElement("div");
+      skipHint.className = "bskip";
+      skipHint.textContent = matchMedia("(pointer: coarse)").matches
+        ? "TAP TO SKIP"
+        : "PRESS ANY KEY";
+
+      overlay.append(blk, skipHint);
+      document.head.appendChild(style);
+      document.body.appendChild(overlay);
+      document.documentElement.style.overflow = "hidden";
+
+      const timers = [];
+      const at = (ms, fn) => timers.push(setTimeout(fn, ms));
+      let done = false;
+      const exit = (fast) => {
+        if (done) return;
+        done = true;
+        timers.forEach(clearTimeout);
+        removeEventListener("keydown", onSkip, true);
+        removeEventListener("pointerdown", onSkip, true);
+        removeEventListener("touchstart", onSkip, true);
+        if (fast) overlay.classList.add("fast");
+        overlay.classList.add("out");
+        setTimeout(
+          () => {
+            overlay.remove();
+            style.remove();
+            document.documentElement.style.overflow = "";
+          },
+          fast ? 150 : 250,
+        );
+      };
+      const onSkip = () => exit(true);
+      addEventListener("keydown", onSkip, true);
+      addEventListener("pointerdown", onSkip, true);
+      addEventListener("touchstart", onSkip, true);
+
+      // header in at 120ms, lines whole per 140ms tick, hold, fade — ≈2.2s
+      at(0, () => ident.classList.add("in"));
+      let t = 120;
+      for (const el of lineEls) {
+        t += 140;
+        at(t, () => el.classList.add("in"));
+      }
+      at(t + 300, () => exit(false));
+    })();
+  </script>
   <div class="container">
     <header class="hero">
       <HeroGridGlow />

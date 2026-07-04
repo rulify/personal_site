@@ -100,6 +100,15 @@
   .search-list :global(.search-option[aria-selected="true"]) {
     background: var(--selection);
   }
+  /* command rows read as system chrome, not content — mono, muted, ruled off */
+  .search-list :global(.search-option.cmd) {
+    border-top: 1px solid var(--border);
+  }
+  .search-list :global(.search-option.cmd .title) {
+    font: 500 var(--fs-label-xs) / 1 var(--font-mono);
+    letter-spacing: var(--track-label);
+    color: var(--text-muted);
+  }
   .search-empty {
     color: var(--warn);
     text-align: center;
@@ -124,8 +133,10 @@
     const list = root.querySelector<HTMLElement>(".search-list")!;
     const empty = root.querySelector<HTMLElement>(".search-empty")!;
 
+    type Option = { title: string; hint: string; url?: string; cmd?: string };
+
     let pages: IndexItem[] | null = null;
-    let visible: IndexItem[] = [];
+    let visible: Option[] = [];
     let selected = 0;
 
     function fuzzy(query: string, text: string): boolean {
@@ -150,14 +161,22 @@
     function render() {
       // content search only — chrome nav already covers the section pages
       const q = input.value.trim();
-      visible = (pages ?? []).filter((p) => matches(p, q));
+      visible = (pages ?? [])
+        .filter((p) => matches(p, q))
+        .map((p) => ({ title: p.title, hint: p.category, url: p.url }));
+      // hidden command: replays the boot sequence (§10). Deliberately not in
+      // the empty-query recommendations — it only surfaces when typed for,
+      // and always sits last.
+      if (q !== "" && "reboot".startsWith(q.toLowerCase())) {
+        visible.push({ title: "REBOOT", hint: "CMD", cmd: "reboot" });
+      }
       if (selected >= visible.length) selected = Math.max(0, visible.length - 1);
 
       list.innerHTML = visible
         .map(
-          (item, idx) => `<div class="search-option" role="option" id="search-opt-${idx}"
-            aria-selected="${idx === selected}" data-idx="${idx}" data-url="${item.url}">
-            <span class="title"></span><span class="hint">${item.category}</span>
+          (item, idx) => `<div class="search-option${item.cmd ? " cmd" : ""}" role="option" id="search-opt-${idx}"
+            aria-selected="${idx === selected}" data-idx="${idx}">
+            <span class="title"></span><span class="hint">${item.hint}</span>
           </div>`,
         )
         .join("");
@@ -172,6 +191,18 @@
         "aria-activedescendant",
         visible.length ? `search-opt-${selected}` : "",
       );
+    }
+
+    function go(item: Option) {
+      if (item.cmd === "reboot") {
+        // clear the §10 flag and reload the root — the boot replays on load
+        try {
+          localStorage.removeItem("boot_seen");
+        } catch {}
+        window.location.href = "/";
+      } else if (item.url) {
+        window.location.href = item.url;
+      }
     }
 
     function select(idx: number) {
@@ -229,8 +260,17 @@
         select(selected - 1);
       } else if (e.key === "Enter") {
         e.preventDefault();
+        // exact-phrase command, dispatched before option selection.
+        // Never rendered as an option; only an exact phrase + Enter gets here.
+        // Dynamic import so the game is a lazy chunk, free until summoned.
+        if (input.value.trim().toLowerCase() === "[redacted]") {
+          input.value = "";
+          input.blur();
+          import("../scripts/calibration.js").then((m) => m.start());
+          return;
+        }
         const item = visible[selected];
-        if (item) window.location.href = item.url;
+        if (item) go(item);
       }
     });
 
@@ -238,7 +278,9 @@
     panel.addEventListener("mousedown", (e) => e.preventDefault());
     list.addEventListener("click", (e) => {
       const opt = (e.target as HTMLElement).closest<HTMLElement>(".search-option");
-      if (opt?.dataset.url) window.location.href = opt.dataset.url;
+      if (!opt) return;
+      const item = visible[Number(opt.dataset.idx)];
+      if (item) go(item);
     });
     list.addEventListener("mousemove", (e) => {
       const opt = (e.target as HTMLElement).closest<HTMLElement>(".search-option");
