@@ -115,6 +115,21 @@
     padding: var(--sp-4) 0;
     margin: 0;
   }
+  /* Mobile expanded row: fill it, and hold the input at 16px — anything
+     smaller makes iOS Safari zoom the page on focus */
+  @media (max-width: 767px) {
+    .site-search {
+      width: 100%;
+    }
+    #site-search-input {
+      font-size: 16px;
+    }
+    .search-panel {
+      width: 100%;
+      left: 0;
+      right: 0;
+    }
+  }
 </style>
 
 <script>
@@ -138,6 +153,12 @@
     let pages: IndexItem[] | null = null;
     let visible: Option[] = [];
     let selected = 0;
+
+    function digest(s: string): number {
+      let x = 5381;
+      for (const c of s) x = ((x * 33) ^ c.charCodeAt(0)) >>> 0;
+      return x;
+    }
 
     function fuzzy(query: string, text: string): boolean {
       const q = query.toLowerCase();
@@ -237,6 +258,27 @@
     function closePanel() {
       panel.hidden = true;
       input.setAttribute("aria-expanded", "false");
+      // collapse the mobile row too — Escape, blur, and navigation all
+      // funnel through here
+      header?.removeAttribute("data-search-open");
+      toggle?.setAttribute("aria-expanded", "false");
+    }
+
+    // mobile toggle: expands the search slot into a row under the strip
+    const header = root.closest<HTMLElement>(".site-header");
+    const toggle = document.querySelector<HTMLElement>("[data-search-toggle]");
+    if (header && toggle) {
+      // keep the input's blur from firing before the click when closing
+      toggle.addEventListener("pointerdown", (e) => e.preventDefault());
+      toggle.addEventListener("click", () => {
+        if (header.hasAttribute("data-search-open")) {
+          input.blur(); // blur → closePanel clears the attributes
+        } else {
+          header.setAttribute("data-search-open", "");
+          toggle.setAttribute("aria-expanded", "true");
+          input.focus(); // focus → openPanel loads the index
+        }
+      });
     }
 
     input.addEventListener("focus", openPanel);
@@ -260,10 +302,7 @@
         select(selected - 1);
       } else if (e.key === "Enter") {
         e.preventDefault();
-        // exact-phrase command, dispatched before option selection.
-        // Never rendered as an option; only an exact phrase + Enter gets here.
-        // Dynamic import so the game is a lazy chunk, free until summoned.
-        if (input.value.trim().toLowerCase() === "[redacted]") {
+        if (digest(input.value.trim().toLowerCase()) === 0xcddde3a5) {
           input.value = "";
           input.blur();
           import("../scripts/calibration.js").then((m) => m.start());

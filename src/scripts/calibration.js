@@ -1,11 +1,6 @@
-// RLFY-01 ordnance trainer — the search bar's hidden "[redacted]" command.
-// A vector calibration sim in a full-window overlay, drawn with the site's own
-// tokens. Esc or the corner EXIT button leaves; the page underneath is never
-// touched while it runs. Loaded on demand, so it costs nothing until summoned.
-//
-// Beyond the classic loop: waves grow denser and faster, hostile drones sweep
-// in and return fire, chained hits multiply score (a wasted shot resets the
-// chain), and every 10,000 points grants an extra unit.
+// RLFY-01 weapons calibration routine. Runs in a full-window overlay drawn
+// with the site's own tokens; Esc or the corner EXIT button leaves, and the
+// page underneath is never touched. Loaded on demand.
 
 let active = false;
 
@@ -27,7 +22,7 @@ export function start() {
 
   const overlay = document.createElement("div");
   overlay.setAttribute("role", "dialog");
-  overlay.setAttribute("aria-label", "Calibration");
+  overlay.setAttribute("aria-label", "Ordnance trainer");
   overlay.tabIndex = -1;
   overlay.style.cssText =
     "position:fixed;inset:0;z-index:120;background:" + BG + ";outline:0";
@@ -80,7 +75,7 @@ export function start() {
   let score = 0;
   let hi = 0;
   try {
-    hi = Number(localStorage.getItem("calibration_hi")) || 0;
+    hi = Number(localStorage.getItem("trn_hi")) || 0;
   } catch {}
   let lives = 3;
   let wave = 0;
@@ -213,7 +208,7 @@ export function start() {
         hi = score;
         newHi = true;
         try {
-          localStorage.setItem("calibration_hi", String(hi));
+          localStorage.setItem("trn_hi", String(hi));
         } catch {}
       }
       drone = null;

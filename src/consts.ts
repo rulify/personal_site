@@ -4,16 +4,16 @@ export const SITE = {
   ident: "RLFY-01",
   name: "Jacob",
   fullName: "Jacob Thomas",
-  headline: "Cybersecurity Student",
-  subtitle: "Cybersecurity student at Oxford Brookes",
+  headline: "Incoming Cybersecurity Student",
+  subtitle: "Incoming cybersecurity student at Oxford Brookes",
   roles: ["WRITEUPS", "PROJECTS", "EXPERIMENTS"],
   description:
-    "Cybersecurity student at Oxford Brookes — writeups, projects, and experiments.",
+    "Incoming cybersecurity student at Oxford Brookes: writeups, projects, and experiments.",
   repo: "https://github.com/rulify/personal_site",
   email: "jacobthomas55555@gmail.com",
   linkedin: "https://www.linkedin.com/in/jacob-thomas-cyber/",
   year: 2026,
-  serial: "SER 7599-2607 // MODEL 26-07C",
+  serial: "SER 1292-1184 // MODEL 54-09B",
 };
 
 // Project status → hazard-token tone (§3: genuine status only, never decoration).

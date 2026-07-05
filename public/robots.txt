@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://rulifysite.vercel.app/sitemap-index.xml
+Sitemap: https://rlfy.vercel.app/sitemap-index.xml

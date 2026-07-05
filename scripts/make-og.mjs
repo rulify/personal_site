@@ -70,7 +70,7 @@ const html = `<!doctype html>
   <span class="cross" style="top:36px;right:44px">+</span>
   <p class="hello"><span class="chev">›››</span> HI, I'M</p>
   <h1><span class="block"></span>JACOB THOMAS</h1>
-  <p class="sub">Cybersecurity student at Oxford Brookes</p>
+  <p class="sub">Incoming cybersecurity student at Oxford Brookes</p>
   <div class="roles">
     <span class="role">WRITEUPS</span>
     <span class="role">PROJECTS</span>

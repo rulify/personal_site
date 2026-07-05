@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://rulifysite.vercel.app',
+  site: 'https://rlfy.vercel.app',
   integrations: [
     mdx(),
     sitemap({ filter: (page) => !page.includes('/404') }),

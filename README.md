@@ -3,11 +3,4 @@
 Personal website for writeups, projects, and experiments.
 Built with [Astro](https://astro.build), static output, deployed on Vercel.
 
-## Commands
-
-| Command           | Action                                    |
-| :---------------- | :---------------------------------------- |
-| `npm install`     | Install dependencies                       |
-| `npm run dev`     | Start local dev server at `localhost:4321` |
-| `npm run build`   | Build the production site to `./dist/`     |
-| `npm run preview` | Preview the build locally                  |
+Live at [rlfy.vercel.app](https://rlfy.vercel.app).

@@ -8,7 +8,10 @@ const linkedinLabel = SITE.linkedin
   .replace(/\/$/, "");
 ---
 
-<BaseLayout title="About" description="About this site and its operator.">
+<BaseLayout
+  title="About"
+  description="Incoming cybersecurity student at Oxford Brookes. A running log of things taken apart or put together."
+>
   <div class="container">
     <article class="measure about">
       <p class="label-xs kicker">
@@ -19,14 +22,21 @@ const linkedinLabel = SITE.linkedin
         <span class="hazard-strip title-rule decal-md" aria-hidden="true"></span>
       </div>
       <div class="prose-body body-m">
+        <p>Hi, I'm Jacob.</p>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Placeholder
-          bio copy until the real thing is written. Sed do eiusmod tempor
-          incididunt ut labore et dolore magna aliqua.
+          I'm an incoming cybersecurity student. There wasn't one big moment that
+          pulled me in; it's more that everything in tech feels like a puzzle
+          to me: a black box sitting there, daring you to open it up and poke
+          around, whether or not you were supposed to.
         </p>
         <p>
-          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-          nisi ut aliquip ex ea commodo consequat.
+          That instinct is basically what this site is. I'm starting a
+          cybersecurity course at Oxford Brookes University in September, and
+          in the meantime this is where I keep the habit going: <a
+            href="https://en.wikipedia.org/wiki/Capture_the_flag_(cybersecurity)"
+          >CTF</a> boxes I've worked through, and whatever I end up building, mostly
+          software but possibly hardware down the line. Less a portfolio,
+          more a running log of things I've taken apart or put together.
         </p>
       </div>
 
@@ -88,6 +98,13 @@ const linkedinLabel = SITE.linkedin
   }
   .contact-row dd {
     margin: 0;
+  }
+  /* very narrow phones: the mono email can't fit beside its label */
+  @media (max-width: 379px) {
+    .contact-row {
+      flex-direction: column;
+      gap: var(--sp-1);
+    }
   }
   @media (pointer: coarse) {
     .contact-row a {

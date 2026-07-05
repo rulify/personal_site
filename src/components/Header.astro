@@ -31,6 +31,17 @@ const isActive = (href: string) => path === href || path.startsWith(href + "/");
           </li>
         ))
       }
+      <li class="search-toggle-slot">
+        <button
+          class="module search-toggle label-xs"
+          data-search-toggle
+          aria-expanded="false"
+          aria-controls="site-search-input"
+          aria-label="Search"
+        >
+          <span aria-hidden="true">&gt;</span>
+        </button>
+      </li>
       <li class="search-slot">
         <SiteSearch />
       </li>
@@ -59,6 +70,7 @@ const isActive = (href: string) => path === href || path.startsWith(href + "/");
     color: var(--text);
     text-decoration: none;
     padding-right: var(--sp-3);
+    white-space: nowrap;
   }
   /* unit marker: the one purple block in the strip */
   .ident-block {
@@ -111,10 +123,39 @@ const isActive = (href: string) => path === href || path.startsWith(href + "/");
     align-items: center;
     padding-left: var(--sp-4);
   }
-  /* Mobile: nav modules stay; the inline search is a desktop affordance */
+  .search-toggle {
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font: 500 var(--fs-label-xs) / 1 var(--font-mono);
+    letter-spacing: var(--track-label);
+  }
+  @media (min-width: 768px) {
+    .modules li.search-toggle-slot {
+      display: none;
+    }
+  }
+  /* very narrow phones: the strip only fits with tighter module padding */
+  @media (max-width: 359px) {
+    .module {
+      padding: 0 var(--sp-2);
+    }
+  }
+  /* Mobile: the inline search collapses behind the > toggle and expands as a
+     full-width row pinned under the strip */
   @media (max-width: 767px) {
     .modules li.search-slot {
       display: none;
+    }
+    .site-header[data-search-open] .modules li.search-slot {
+      display: flex;
+      position: absolute;
+      top: 44px;
+      left: 0;
+      right: 0;
+      padding: var(--sp-3) var(--sp-4);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
     }
   }
 </style>

@@ -28,24 +28,28 @@ const meta = (p: (typeof projects)[number]) =>
         <span class="hazard-strip title-rule decal-md" aria-hidden="true"></span>
       </div>
     </header>
-    <ul class="card-grid" role="list">
-      {
-        projects.map((p, i) => (
-          <li>
-            <Card
-              href={`/projects/${p.id}`}
-              eyebrow="PROJECT"
-              title={p.data.title}
-              excerpt={p.data.description}
-              meta={meta(p)}
-              status={p.data.status}
-              statusTone={STATUS_TONE[p.data.status]}
-              index={i + 1}
-            />
-          </li>
-        ))
-      }
-    </ul>
+    {
+      projects.length > 0 ? (
+        <ul class="card-grid" role="list">
+          {projects.map((p, i) => (
+            <li>
+              <Card
+                href={`/projects/${p.id}`}
+                eyebrow="PROJECT"
+                title={p.data.title}
+                excerpt={p.data.description}
+                meta={meta(p)}
+                status={p.data.status}
+                statusTone={STATUS_TONE[p.data.status]}
+                index={i + 1}
+              />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="value-s empty">NOTHING LOGGED YET</p>
+      )
+    }
   </div>
 </BaseLayout>
 
@@ -68,5 +72,9 @@ const meta = (p: (typeof projects)[number]) =>
   }
   .title-rule {
     flex: 1;
+  }
+  .empty {
+    color: var(--text-muted);
+    margin: 0;
   }
 </style>

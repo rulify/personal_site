@@ -91,7 +91,10 @@ const {
 </BaseLayout>
 
 <style>
+  /* --measure is 66ch: it must resolve against the prose size here too,
+     or the header column comes out narrower than the body below it */
   .article-header {
+    font-size: var(--fs-body-m);
     max-width: var(--measure);
     margin: var(--sp-7) auto var(--sp-6);
   }
@@ -146,6 +149,7 @@ const {
   }
 
   .article-end {
+    font-size: var(--fs-body-m);
     max-width: var(--measure);
     margin: var(--sp-7) auto var(--sp-8);
   }

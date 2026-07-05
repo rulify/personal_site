@@ -1,0 +1,159 @@
+---
+title: "From an Arch Rice to a Website"
+description: "Why I built a personal site, and how a shelved Arch Linux rice design became the system it runs on."
+category: MAKE
+date: 2026-07-04
+readTime: 6 MIN
+tags: [site, astro, design]
+---
+
+import Callout from "../../components/Callout.astro";
+
+The first proper post on here should probably explain why "here" exists.
+This is the story of why I built a personal site, and how its design
+started life as something that wasn't a website at all.
+
+<h2 id="why-a-site">Why a site<a class="heading-anchor" href="#why-a-site" aria-label="Link to this section">#</a></h2>
+
+Two reasons, really. I had never properly tried web design and wanted to
+find out whether I could actually do it: not just make a page that
+functions, but design something with a point of view. And I wanted a place
+of my own to put things: projects I've made, writeups of what I'm doing,
+and a record of what I get up to once I start studying cybersecurity at
+Oxford Brookes next year. A site I own felt better for that than a profile
+on someone else's platform.
+
+<h2 id="it-started-as-an-os">It started as an operating system<a class="heading-anchor" href="#it-started-as-an-os" aria-label="Link to this section">#</a></h2>
+
+The design didn't begin as a website. It began, around the start of this
+year, as a plan for an [Arch Linux](https://archlinux.org/) rice, a full
+custom desktop built around a 1990s Japanese industrial mecha look.
+Designing an OS interface felt like a fun challenge: I had never done any
+UX design, but I had a fair amount of Linux and Arch experience to lean on.
+
+<Callout kind="note">
+"Ricing" is the practice of customising a Linux desktop until every
+visible pixel matches one theme: window manager, bar, launcher, terminal,
+notifications, all of it. [r/unixporn](https://www.reddit.com/r/unixporn/)
+is the usual gallery of the art form.
+</Callout>
+
+I got as far as a moodboard with design notes (palette, typography rules,
+the components it would need) and a basic VM sandbox blocking out the
+tools it would run ([Hyprland](https://hypr.land/) for the window manager,
+Wofi as the launcher, and so on). Then in January I realised I should
+probably be focusing on my A-levels a lot more than I was, and the whole
+thing went in a drawer.
+
+<figure>
+  <img src="/images/arch-rice-moodboard.png" alt="A one-page design document titled 'japanese 90s mecha arch rice' with sections for core concept, design rules, palette swatches, typography, and system components." width="1241" height="1754" loading="lazy" />
+  <figcaption>FIG 01 · the original moodboard for the rice, January 2026 (<a href="/files/japanese-90s-mecha-arch-rice.pdf">original PDF</a>)</figcaption>
+</figure>
+
+Reading it back now, almost everything on that page survived. The palette
+is within a few hex digits of what this site ships, and the rules (one
+motif per component, hazard colours only for real warnings, purple only as
+the active state, labels over icons) are still the rules the site is
+built against. "An interface that reads as an instrument, not a themed
+desktop" turned out to describe a website just as well as an OS.
+
+<h2 id="two-projects-become-one">Two projects become one<a class="heading-anchor" href="#two-projects-become-one" aria-label="Link to this section">#</a></h2>
+
+I came back to the concept in June. Part of me wanted to finally attempt
+the rice and do some proper UX work. But I also wanted to try some real
+web design over the summer and build a personal site (this one). Rather
+than run both, I combined them: the rice was always going to be a design
+exercise more than an OS I would genuinely daily-drive, and the site needed
+exactly the design language I had already worked out. So the plan became:
+keep the design methodology and ideas from the OS concept, and only adapt
+them where the web demanded it. (Spoiler: it demanded it.)
+
+<h2 id="blocking-it-out">Blocking it out<a class="heading-anchor" href="#blocking-it-out" aria-label="Link to this section">#</a></h2>
+
+I started with a deliberately plain build, just layout, typography, and
+the base colours, to check the structure felt right before committing to
+any flair. It did: the demo confirmed I liked the general layout and
+approach enough to keep going.
+
+<figure>
+  <img src="/images/site-beta-2.png" alt="An early dark-themed homepage build with a plain wordmark, three post cards, and no decorative elements." width="1720" height="761" loading="lazy" />
+  <figcaption>FIG 02 · the first blockout: layout and base palette, nothing else</figcaption>
+</figure>
+
+For the stack I settled on [Astro](https://astro.build/), deployed through
+[Vercel](https://vercel.com/). The short version of why, versus something
+like WordPress: Astro is static-first, so every page ships as plain HTML
+and CSS with zero JavaScript unless a component explicitly asks for it;
+this site only runs scripts for the search bar and the boot screen. Posts
+are markdown files in the same git repository as the code, so there is no
+database, no admin panel, and no plugin ecosystem to keep patched. As
+someone about to study security, "the attack surface is a folder of static
+files" is my kind of hosting. And Vercel rebuilds and deploys the site on
+every git push, for free.
+
+<h2 id="adding-the-flair">Adding the flair<a class="heading-anchor" href="#adding-the-flair" aria-label="Link to this section">#</a></h2>
+
+With the skeleton approved, I layered in the character the rice was meant
+to have: the purple accent doing real work as the active state, decal
+elements (barcodes, serial numbers, unit plates, hazard stripes), and
+[CJK](https://en.wikipedia.org/wiki/CJK_characters) annotations through
+the chrome, because the reference material for this aesthetic is dense
+with them. This was the version that felt closest to the original concept.
+
+<figure>
+  <img src="/images/site-beta-3.png" alt="The homepage with heavy styling: Japanese annotations above the wordmark, a purple unit plate, barcode decals, and a spec readout panel." width="1658" height="764" loading="lazy" />
+  <figcaption>FIG 03 · the flair pass: accents, decals, and the CJK annotations that didn't survive</figcaption>
+</figure>
+
+<h2 id="the-feedback-pass">The feedback pass<a class="heading-anchor" href="#the-feedback-pass" aria-label="Link to this section">#</a></h2>
+
+Then I did the sensible thing and handed the site to family and friends to
+gauge how it actually felt to use. The verdict was consistent: the added
+visual elements, mostly the CJK characters, made the site feel confusing
+and unclear. What read to me as texture read to everyone else as
+information they were failing to parse. (They were also quietly broken: I
+only ship a Latin subset of the site's fonts, so every CJK glyph was
+falling back to whatever font a visitor's system happened to have.)
+
+So the harder-to-understand elements went, repositioning focus on the main
+parts of the site, starting with the [hero](https://en.wikipedia.org/wiki/Hero_image),
+the large introductory block at the top of the homepage. The lesson of the
+whole pass, and probably of the project: decoration only earns its place
+if it never competes with content.
+
+<figure>
+  <img src="/images/site-beta-4.png" alt="The homepage after the readability pass: the same industrial layout with the decorative annotations removed and clearer navigation labels." width="1700" height="801" loading="lazy" />
+  <figcaption>FIG 04 · after the readability pass: same language, fewer words</figcaption>
+</figure>
+
+<h2 id="the-finalish-form">The final(ish) form<a class="heading-anchor" href="#the-finalish-form" aria-label="Link to this section">#</a></h2>
+
+A few more decisions got the site to the version you're reading.
+
+The search changed shape. The original was a centred command palette that
+dimmed everything behind it, very deliberately a universal OS search,
+because that is what it had been designed as. On a small content site it
+was theatre: it took over the screen to search five pages. It became a
+quiet search box in the header that suggests results as you type and never
+takes focus away from the page.
+
+The hero became mine. Earlier versions introduced the site under an alias
+rather than my name, and it didn't convey who I am or what I do. It now
+leads with my actual name and what I'm about, which is the one thing a
+personal site's front page has to do.
+
+And the last layer of small tweaks: the pixel-grid glow that follows your
+mouse on the homepage, and a bootup for the site reminiscent of a system
+BIOS, a mech power-on self-test in keeping with the industrial feel. It
+plays once per browser on your first visit, any key skips it, and typing
+`reboot` into the search bar runs it again.
+
+I've also hidden some easter eggs. The search bar accepts more than
+searches, but that one you'll have to find yourself.
+
+<h2 id="whats-next">What's next<a class="heading-anchor" href="#whats-next" aria-label="Link to this section">#</a></h2>
+
+Real content: box writeups and build logs once I'm doing things worth
+writing up, and whatever the course throws at me from September. The
+site's [source is on GitHub](https://github.com/rulify/personal_site) if
+you want to see how any of it works.

@@ -277,8 +277,11 @@ hr {
   }
 }
 
-/* The reading column: chrome may be wide; text never is */
+/* The reading column: chrome may be wide; text never is.
+   font-size pins the 66ch basis to the prose size, so this column always
+   matches .prose exactly (children set their own fonts). */
 .measure {
+  font-size: var(--fs-body-m);
   max-width: var(--measure);
   margin-inline: auto;
 }

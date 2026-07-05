@@ -207,27 +207,29 @@ const tagStr = (tags: string[]) =>
       </ul>
     </section>
 
-    <section class="home-section">
-      <Kicker label="RECENT / PROJECTS" moreHref="/projects" moreLabel="ALL PROJECTS" />
-      <ul class="card-grid" role="list">
-        {
-          projects.slice(0, 3).map((p, i) => (
-            <li>
-              <Card
-                href={`/projects/${p.id}`}
-                eyebrow="PROJECT"
-                title={p.data.title}
-                excerpt={p.data.description}
-                meta={`${fmt(p.data.date)} · ${tagStr(p.data.tags)}`}
-                status={p.data.status}
-                statusTone={STATUS_TONE[p.data.status]}
-                index={i + 1}
-              />
-            </li>
-          ))
-        }
-      </ul>
-    </section>
+    {
+      projects.length > 0 && (
+        <section class="home-section">
+          <Kicker label="RECENT / PROJECTS" moreHref="/projects" moreLabel="ALL PROJECTS" />
+          <ul class="card-grid" role="list">
+            {projects.slice(0, 3).map((p, i) => (
+              <li>
+                <Card
+                  href={`/projects/${p.id}`}
+                  eyebrow="PROJECT"
+                  title={p.data.title}
+                  excerpt={p.data.description}
+                  meta={`${fmt(p.data.date)} · ${tagStr(p.data.tags)}`}
+                  status={p.data.status}
+                  statusTone={STATUS_TONE[p.data.status]}
+                  index={i + 1}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
   </div>
 </BaseLayout>
 
