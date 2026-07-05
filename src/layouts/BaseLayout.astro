@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import Analytics from "@vercel/analytics/astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { SITE } from "../consts";
@@ -97,6 +98,7 @@ const personLd = {
       crossorigin
     />
     <title>{fullTitle}</title>
+    <Analytics />
   </head>
   <body>
     <a class="skip-link label-xs" href="#main">SKIP TO CONTENT</a>
