@@ -25,7 +25,9 @@ export function start() {
   overlay.setAttribute("aria-label", "Ordnance trainer");
   overlay.tabIndex = -1;
   overlay.style.cssText =
-    "position:fixed;inset:0;z-index:120;background:" + BG + ";outline:0";
+    "position:fixed;inset:0;z-index:120;background:" + BG + ";outline:0;" +
+    "touch-action:none;user-select:none;-webkit-user-select:none;" +
+    "-webkit-tap-highlight-color:transparent";
 
   const canvas = document.createElement("canvas");
   canvas.style.cssText = "display:block;width:100%;height:100%";
@@ -43,6 +45,71 @@ export function start() {
   exitBtn.onmouseleave = () => (exitBtn.style.color = MUTED);
   overlay.appendChild(exitBtn);
 
+  // touch pads: they hold down the same input flags the keyboard sets, so
+  // handling, fire rate, and difficulty are identical to playing with keys
+  let touch = matchMedia("(pointer: coarse)").matches;
+  let overAt = 0;
+  const pads = document.createElement("div");
+  pads.setAttribute("aria-hidden", "true");
+  pads.style.cssText =
+    "position:absolute;left:0;right:0;bottom:0;display:none;" +
+    "justify-content:space-between;align-items:flex-end;" +
+    "padding:0 16px calc(16px + env(safe-area-inset-bottom,0px));pointer-events:none";
+  const cluster = () => {
+    const c = document.createElement("div");
+    c.style.cssText = "display:flex;gap:12px;pointer-events:none";
+    return c;
+  };
+  const mkPad = (label, keys, w) => {
+    const b = document.createElement("div");
+    b.textContent = label;
+    b.style.cssText =
+      "pointer-events:auto;display:flex;align-items:center;justify-content:center;" +
+      "width:" + w + "px;height:64px;border:1px solid " + DISABLED + ";" +
+      "border-radius:2px;color:" + MUTED + ";font:500 14px/1 " + MONO + ";" +
+      "letter-spacing:.08em;touch-action:none;background:rgba(255,255,255,.03)";
+    const release = () => {
+      keys.forEach((k) => held.delete(k));
+      b.style.borderColor = DISABLED;
+      b.style.color = MUTED;
+    };
+    b.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      keys.forEach((k) => held.add(k));
+      b.style.borderColor = ACCENT;
+      b.style.color = TEXT;
+      try {
+        b.setPointerCapture(e.pointerId);
+      } catch {}
+    });
+    b.addEventListener("pointerup", release);
+    b.addEventListener("pointercancel", release);
+    return b;
+  };
+  const rot = cluster();
+  rot.append(mkPad("<", ["ArrowLeft"], 72), mkPad(">", ["ArrowRight"], 72));
+  const act = cluster();
+  act.append(mkPad("THR", ["ArrowUp"], 72), mkPad("FIRE", [" "], 88));
+  pads.append(rot, act);
+  overlay.appendChild(pads);
+  const syncPads = () => {
+    pads.style.display = touch && state === "play" ? "flex" : "none";
+  };
+  overlay.addEventListener("pointerdown", (e) => {
+    if (e.pointerType === "touch" && !touch) {
+      touch = true;
+      syncPads();
+    }
+    // tap the field to engage/retry (retry debounced so a shot fired at the
+    // moment of death can't instantly restart the run)
+    if (
+      e.target === canvas &&
+      (state === "ready" || (state === "over" && performance.now() - overAt > 600))
+    ) {
+      engage();
+    }
+  });
+
   const prevFocus = document.activeElement;
   const prevOverflow = document.documentElement.style.overflow;
   document.body.appendChild(overlay);
@@ -52,6 +119,12 @@ export function start() {
   const ctx = canvas.getContext("2d");
   let W = 0;
   let H = 0;
+  // the sim runs in a virtual space normalised against a desktop-sized field
+  // and is scale-rendered to fit, so small screens get the same rock density
+  // and dodge distances instead of a crammed, harder game
+  let SCALE = 1;
+  let VW = 0;
+  let VH = 0;
   const resize = () => {
     const dpr = Math.min(devicePixelRatio || 1, 2);
     W = overlay.clientWidth;
@@ -59,6 +132,9 @@ export function start() {
     canvas.width = W * dpr;
     canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    SCALE = Math.min(1, Math.max(0.55, Math.sqrt((W * H) / (1280 * 800))));
+    VW = W / SCALE;
+    VH = H / SCALE;
   };
   resize();
 
@@ -100,6 +176,8 @@ export function start() {
   const setState = (s) => {
     state = s;
     overlay.dataset.state = s; // observable hook for tests, invisible to users
+    if (s === "over") overAt = performance.now();
+    syncPads();
   };
 
   function makeRock(tier, x, y) {
@@ -130,8 +208,8 @@ export function start() {
     for (let i = 0; i < count; i++) {
       let x, y;
       do {
-        x = rand(0, W);
-        y = rand(0, H);
+        x = rand(0, VW);
+        y = rand(0, VH);
       } while (Math.hypot(x - ship.x, y - ship.y) < 220);
       rocks.push(makeRock(0, x, y));
     }
@@ -140,8 +218,8 @@ export function start() {
   function spawnDrone() {
     const dir = Math.random() < 0.5 ? 1 : -1;
     drone = {
-      x: dir === 1 ? -30 : W + 30,
-      y: rand(H * 0.15, H * 0.85),
+      x: dir === 1 ? -30 : VW + 30,
+      y: rand(VH * 0.15, VH * 0.85),
       dir,
       speed: 110 + wave * 8,
       phase: rand(0, TAU),
@@ -151,8 +229,8 @@ export function start() {
   }
 
   function resetShip() {
-    ship.x = W / 2;
-    ship.y = H / 2;
+    ship.x = VW / 2;
+    ship.y = VH / 2;
     ship.vx = ship.vy = 0;
     ship.a = -TAU / 4;
     ship.dead = false;
@@ -223,7 +301,7 @@ export function start() {
   // attract-mode debris behind the title and game-over screens
   setState("ready");
   for (let i = 0; i < 6; i++) {
-    rocks.push(makeRock((Math.random() * 3) | 0, rand(0, W), rand(0, H)));
+    rocks.push(makeRock((Math.random() * 3) | 0, rand(0, VW), rand(0, VH)));
   }
 
   // --- input -----------------------------------------------------------
@@ -275,8 +353,8 @@ export function start() {
       p.y += p.vy * dt;
     }
     for (const r of rocks) {
-      r.x = wrap(r.x + r.vx * dt, W, r.r);
-      r.y = wrap(r.y + r.vy * dt, H, r.r);
+      r.x = wrap(r.x + r.vx * dt, VW, r.r);
+      r.y = wrap(r.y + r.vy * dt, VH, r.r);
       r.rot += r.spin * dt;
     }
     // a shot that dies empty resets the chain
@@ -286,8 +364,8 @@ export function start() {
       return false;
     });
     for (const b of bullets) {
-      b.x = wrap(b.x + b.vx * dt, W, 2);
-      b.y = wrap(b.y + b.vy * dt, H, 2);
+      b.x = wrap(b.x + b.vx * dt, VW, 2);
+      b.y = wrap(b.y + b.vy * dt, VH, 2);
     }
     ebullets = ebullets.filter((b) => (b.t -= dt) > 0);
     for (const b of ebullets) {
@@ -314,8 +392,8 @@ export function start() {
       const drag = Math.pow(0.4, dt);
       ship.vx *= drag;
       ship.vy *= drag;
-      ship.x = wrap(ship.x + ship.vx * dt, W, 14);
-      ship.y = wrap(ship.y + ship.vy * dt, H, 14);
+      ship.x = wrap(ship.x + ship.vx * dt, VW, 14);
+      ship.y = wrap(ship.y + ship.vy * dt, VH, 14);
       if (ship.inv > 0) ship.inv -= dt;
 
       if (has(" ") && cooldown <= 0 && bullets.length < 5) {
@@ -353,7 +431,7 @@ export function start() {
           t: 2.4,
         });
       }
-      if (drone.x < -40 || drone.x > W + 40) {
+      if (drone.x < -40 || drone.x > VW + 40) {
         drone = null;
         droneTimer = rand(10, 16);
       }
@@ -468,6 +546,7 @@ export function start() {
     }
     ctx.fillStyle = BG;
     ctx.fillRect(-20, -20, W + 40, H + 40);
+    ctx.scale(SCALE, SCALE); // world is simulated in virtual coords
 
     ctx.strokeStyle = MUTED;
     ctx.lineWidth = 1.5;
@@ -544,12 +623,18 @@ export function start() {
       ctx.fillStyle = WARN;
       ctx.fillText("WEAPONS SYS ............. [FREE]", W / 2, y + 44);
       ctx.fillStyle = MUTED;
-      ctx.fillText("LEFT / RIGHT ROTATE — UP THRUST — SPACE FIRE", W / 2, y + 84);
+      ctx.fillText(
+        touch
+          ? "< > ROTATE — THR THRUST — FIRE"
+          : "LEFT / RIGHT ROTATE — UP THRUST — SPACE FIRE",
+        W / 2,
+        y + 84,
+      );
       ctx.fillText("CHAIN HITS TO MULTIPLY — HOSTILES RETURN FIRE", W / 2, y + 108);
       ctx.fillStyle = TEXT;
-      ctx.fillText("PRESS ENTER TO ENGAGE", W / 2, y + 144);
+      ctx.fillText(touch ? "TAP TO ENGAGE" : "PRESS ENTER TO ENGAGE", W / 2, y + 144);
       ctx.fillStyle = DISABLED;
-      ctx.fillText("ESC TO EXIT", W / 2, y + 172);
+      ctx.fillText(touch ? "EXIT WITH ×" : "ESC TO EXIT", W / 2, y + 172);
     }
     if (state === "over") {
       const y = H * 0.36;
@@ -564,7 +649,11 @@ export function start() {
         ctx.fillText("NEW HIGH SCORE", W / 2, y + 68);
       }
       ctx.fillStyle = TEXT;
-      ctx.fillText("ENTER TO RETRY — ESC TO EXIT", W / 2, y + 104);
+      ctx.fillText(
+        touch ? "TAP TO RETRY — EXIT WITH ×" : "ENTER TO RETRY — ESC TO EXIT",
+        W / 2,
+        y + 104,
+      );
     }
   }
 
